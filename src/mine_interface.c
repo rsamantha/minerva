@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include "core.h"
 #include "mine.h"
 #include <R.h>
 #include <Rinternals.h>
