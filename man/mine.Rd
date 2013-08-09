@@ -16,7 +16,7 @@
 \description{Maximal Information-Based Nonparametric Exploration (MINE) 
 statistics. \code{mine} computes the MINE family measures between two variables. 
 }
-\usage{mine(x,y=NULL,master=NULL,alpha=0.6,C=15,n.cores=1,var.thr=1e-5)}
+\usage{mine(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL)}
 \arguments{
   \item{x}{ a numeric vector (of size \emph{n}), matrix or data frame (which is coerced 
     to matrix). }
@@ -43,6 +43,7 @@ statistics. \code{mine} computes the MINE family measures between two variables.
     variables, since \code{mine} can not be computed in case of variance
     close to 0. Default value is 1e-5. Information about failed check
     are reported in \emph{var_thr.log} file. }
+  \item{eps}{ integer in [0,1]. If 'NULL' it is set to 1-MIC}
 \item{\dots}{ currently not used. }
 } 
 \details{\code{mine} is an R wrapper for the C engine \emph{cmine} 

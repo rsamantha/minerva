@@ -49,9 +49,10 @@ double pearson(mine_problem *myprobl){
   return(r * r);
 }
 
-SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C){
+SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
   
   double *restmp;
+  double EPS;
   mine_problem *prob;
   mine_parameter *param;
   mine_score *minescore;
@@ -72,10 +73,16 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C){
   prob->y=REAL(y);
   
   minescore=mine_compute_score(prob,param);
-  restmp[0]=mic(minescore);
-  restmp[1]=mas(minescore);
-  restmp[2]=mev(minescore);
-  restmp[3]=mcn(minescore);
+  restmp[0]=mine_mic(minescore);
+  restmp[1]=mine_mas(minescore);
+  restmp[2]=mine_mev(minescore);
+  if (!isNull(eps)){
+    EPS=asReal(eps);
+    restmp[3]=mine_mcn(minescore,EPS);  
+  }else{
+    restmp[3]=mine_mcn_general(minescore);
+  }
+  
   restmp[4]=restmp[0] - pearson(prob);
   
   /* Free */
@@ -86,10 +93,10 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C){
   return(res);
 }
 
-SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C)
+SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps)
 {
   R_len_t i, j, rx, cx;
-  double score;
+  double score, EPS;
   double **pointers;
   mine_problem *prob;
   mine_parameter *param;
@@ -138,7 +145,7 @@ SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C)
       prob->y=pointers[j];
       /* Computing MINE scores */
       minescore=mine_compute_score(prob,param);
-      score=mic(minescore);
+      score=mine_mic(minescore);
       REAL(resmic)[(cx*j) + i] = score;
       REAL(resmic)[(cx*i) + j] = score;
 						
@@ -146,15 +153,20 @@ SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C)
       REAL(resmicmr)[(cx*j) + i] = score;
       REAL(resmicmr)[(cx*i) + j] = score;
       
-      score=mas(minescore);
+      score=mine_mas(minescore);
       REAL(resmas)[(cx*j) + i] = score;
       REAL(resmas)[(cx*i) + j] = score;
 
-      score=mev(minescore);
+      score=mine_mev(minescore);
       REAL(resmev)[(cx*j) + i] = score;
       REAL(resmev)[(cx*i) + j] = score;
 
-      score=mcn(minescore);
+      if (!isNull(eps)){
+        EPS=asReal(eps);
+        score=mine_mcn(minescore,EPS);
+      }else{
+        score=mine_mcn_general(minescore);
+      }
       REAL(resmcn)[(cx*j) + i] = score;
       REAL(resmcn)[(cx*i) + j] = score;
             
