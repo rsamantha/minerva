@@ -246,10 +246,8 @@ mine(x4,y4)
 # MIC-R2 = 0.68
 
 data(Spellman)
-Spellman <- as.matrix(Spellman)
 res <- mine(Spellman,master=1,n.cores=1)
 
 \dontrun{## example of multicore computation
-require(parallel)
 res <- mine(Spellman,master=1,n.cores=parallel::detectCores()-1)}
 }
