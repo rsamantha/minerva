@@ -1,0 +1,382 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGILL (0x4) at pc=0x000000000830c8e0, pid=16149, tid=68441856
+#
+# JRE version: 6.0_24-b24
+# Java VM: OpenJDK 64-Bit Server VM (20.0-b12 mixed mode linux-amd64 compressed oops)
+# Derivative: IcedTea6 1.11.3
+# Distribution: Ubuntu 12.04 LTS, package 6b24-1.11.3-1ubuntu0.12.04.1
+# Problematic frame:
+# J  mine.core.GridFinder.BaseCases([Ldata/Point;ILjava/util/Map;[Ljava/lang/Integer;[[Lmine/core/GridFinder$LinkedListNode;[[F[[I)V
+#
+# If you would like to submit a bug report, please include
+# instructions how to reproduce the bug and visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-6/
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000000005a55800):  JavaThread "main" [_thread_in_Java, id=16150, stack(0x0000000004045000,0x0000000004146000)]
+
+siginfo:si_signo=SIGILL: si_errno=0, si_code=1 (ILL_ILLOPC), si_addr=0x000000000830c8e0
+
+Registers:
+RAX=0x0000000000000000, RBX=0x0000000000000001, RCX=0x0000000000000001, RDX=0x0000000097036ba0
+RSP=0x00000000041443e8, RBP=0x0000000000000002, RSI=0x00000000ffffffff, RDI=0x0000000000000001
+R8 =0x0000000000000000, R9 =0x0000000000000001, R10=0x0000000000000001, R11=0x0000000000000001
+R12=0x0000000000000000, R13=0x00000000970366b0, R14=0x0000000000000001, R15=0x0000000005a55800
+RIP=0x000000000830c8e0, EFLAGS=0x0000000000000014, CSGSFS=0x0000000000000000, ERR=0x0000000000000000
+  TRAPNO=0x0000000000000000
+
+Top of Stack: (sp=0x00000000041443e8)
+0x00000000041443e8:   3ff0000000000000 0000000000000018
+0x00000000041443f8:   0000000000000009 00000000970366e8
+0x0000000004144408:   ffffffff00000001 0000000004144518
+0x0000000004144418:   00000000041444c8 00000000041444c8
+0x0000000004144428:   0000000097036b88 0000000208293dd0
+0x0000000004144438:   0000000097036a78 0000000097036968
+0x0000000004144448:   0000000006475b93 00000002ff7fffff
+0x0000000004144458:   0000000000072c08 0000000000000000
+0x0000000004144468:   00000000082a0279 0000000004144518
+0x0000000004144478:   000000000829485a 0000000000000001
+0x0000000004144488:   00000000041444d0 0000000039677110
+0x0000000004144498:   000000000829485a 00000000970366e8
+0x00000000041444a8:   0000000097036a78 0000000097036968
+0x00000000041444b8:   00000000970366b0 0000000097035af0
+0x00000000041444c8:   0000000000000002 0000000097033108
+0x00000000041444d8:   00000000041444d8 000000003993aede
+0x00000000041444e8:   00000000041445a0 000000003993c7d8
+0x00000000041444f8:   0000000000000000 000000003993b0f8
+0x0000000004144508:   00000000041444a0 0000000004144570
+0x0000000004144518:   00000000041445e8 00000000082949b3
+0x0000000004144528:   0000000000000000 0000000000000000
+0x0000000004144538:   0000000000000000 0000000097036a78
+0x0000000004144548:   0000000097036968 00000000970366e8
+0x0000000004144558:   00000000970366b0 0000000097035af0
+0x0000000004144568:   0000000097035ad0 0000000000000000
+0x0000000004144578:   402e000000000000 00000000041445e8
+0x0000000004144588:   0000000000000002 0000000000000003
+0x0000000004144598:   0000000097030758 0000000097033108
+0x00000000041445a8:   00000000041445a8 0000000039937926
+0x00000000041445b8:   0000000004144620 0000000039938c18
+0x00000000041445c8:   0000000000000000 0000000039937c08
+0x00000000041445d8:   0000000004144570 0000000004144610 
+
+Instructions: (pc=0x000000000830c8e0)
+0x000000000830c8c0:   5a c0 f3 0f 2a d3 0f 28 ca f3 0f 5e ce f3 0f 5a
+0x000000000830c8d0:   d2 f3 0f 5a c9 d9 ed 48 83 ec 08 f2 0f 11 0c 24
+0x000000000830c8e0:   66 dd 04 24 d9 f1 dd 5c 24 00 f2 0f 10 0c 24 48
+0x000000000830c8f0:   83 c4 08 f2 0f 59 ca f2 0f 58 c8 f2 0f 5a c1 41 
+
+Register to memory mapping:
+
+RAX=0x0000000000000000 is an unknown value
+RBX=0x0000000000000001 is an unknown value
+RCX=0x0000000000000001 is an unknown value
+RDX=0x0000000097036ba0 is an oop
+[I 
+ - klass: {type array int}
+ - length: 2
+RSP=0x00000000041443e8 is pointing into the stack for thread: 0x0000000005a55800
+RBP=0x0000000000000002 is an unknown value
+RSI=0x00000000ffffffff is an unknown value
+RDI=0x0000000000000001 is an unknown value
+R8 =0x0000000000000000 is an unknown value
+R9 =0x0000000000000001 is an unknown value
+R10=0x0000000000000001 is an unknown value
+R11=0x0000000000000001 is an unknown value
+R12=0x0000000000000000 is an unknown value
+R13=0x00000000970366b0 is an oop
+[Ljava.lang.Integer; 
+ - klass: 'java/lang/Integer'[]
+ - length: 9
+R14=0x0000000000000001 is an unknown value
+R15=0x0000000005a55800 is a thread
+
+
+Stack: [0x0000000004045000,0x0000000004146000],  sp=0x00000000041443e8,  free space=1020k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J  mine.core.GridFinder.BaseCases([Ldata/Point;ILjava/util/Map;[Ljava/lang/Integer;[[Lmine/core/GridFinder$LinkedListNode;[[F[[I)V
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x0000000005de6800 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=16161, stack(0x000000000d01e000,0x000000000d11f000)]
+  0x0000000005de3000 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=16160, stack(0x000000000cf1d000,0x000000000d01e000)]
+  0x0000000005de1000 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=16159, stack(0x000000000ce1c000,0x000000000cf1d000)]
+  0x000000000c299800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=16158, stack(0x000000000cd1b000,0x000000000ce1c000)]
+  0x000000000c240000 JavaThread "Finalizer" daemon [_thread_blocked, id=16157, stack(0x000000000c531000,0x000000000c632000)]
+  0x0000000005d7e000 JavaThread "Reference Handler" daemon [_thread_blocked, id=16156, stack(0x000000000c430000,0x000000000c531000)]
+=>0x0000000005a55800 JavaThread "main" [_thread_in_Java, id=16150, stack(0x0000000004045000,0x0000000004146000)]
+
+Other Threads:
+  0x000000000c230800 VMThread [stack: 0x000000000c32f000,0x000000000c430000] [id=16155]
+  0x000000000c2a1000 WatcherThread [stack: 0x000000000d11f000,0x000000000d220000] [id=16162]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 36672K, used 23936K [0x0000000095920000, 0x0000000098200000, 0x00000000be7c0000)
+  eden space 31488K, 76% used [0x0000000095920000,0x0000000097080000,0x00000000977e0000)
+  from space 5184K, 0% used [0x0000000097cf0000,0x0000000097cf0000,0x0000000098200000)
+  to   space 5184K, 0% used [0x00000000977e0000,0x00000000977e0000,0x0000000097cf0000)
+ PSOldGen        total 83776K, used 0K [0x0000000043bc0000, 0x0000000048d90000, 0x0000000095920000)
+  object space 83776K, 0% used [0x0000000043bc0000,0x0000000043bc0000,0x0000000048d90000)
+ PSPermGen       total 21248K, used 3700K [0x00000000395c0000, 0x000000003aa80000, 0x0000000043bc0000)
+  object space 21248K, 17% used [0x00000000395c0000,0x000000003995d270,0x000000003aa80000)
+
+Code Cache  [0x000000000828f000, 0x00000000084ff000, 0x000000000b28f000)
+ total_blobs=235 nmethods=54 adapters=135 free_code_cache=49818240 largest_free_block=6016
+
+Dynamic libraries:
+00400000-00409000 r-xp 00000000 08:01 134133                             /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
+00608000-00609000 r--p 00008000 08:01 134133                             /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
+00609000-0060a000 rw-p 00009000 08:01 134133                             /usr/lib/jvm/java-6-openjdk-amd64/jre/bin/java
+04000000-04022000 r-xp 00000000 08:01 14421469                           /lib/x86_64-linux-gnu/ld-2.15.so
+04022000-04023000 rw-s 00000000 08:01 15597706                           /tmp/vgdb-pipe-shared-mem-vgdb-16149-by-roberto-on-???
+04023000-04026000 rw-p 00000000 00:00 0 
+04026000-04027000 r--p 00000000 00:00 0 
+04027000-04028000 rw-p 00000000 00:00 0 
+04028000-04030000 rw-s 00000000 08:01 15597707                           /tmp/hsperfdata_roberto/16149
+04030000-04032000 r--s 0000a000 08:01 14161165                           /home/roberto/mpba_scripts_network/minerva/tests/MINE.jar
+04032000-04035000 r--s 00077000 08:01 18622507                           /usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/localedata.jar
+04035000-04037000 r--s 00001000 08:01 18622509                           /usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/dnsns.jar
+04037000-04039000 r--s 0000f000 08:01 18622505                           /usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/pulse-java.jar
+04039000-0403d000 r--s 00038000 08:01 18622508                           /usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/sunpkcs11.jar
+0403d000-0403e000 r--s 00007000 08:01 18882605                           /usr/share/java/java-atk-wrapper.jar
+0403e000-04041000 r--s 00031000 08:01 18622506                           /usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/sunjce_provider.jar
+04042000-04045000 rw-p 00000000 00:00 0 
+04045000-04048000 ---p 00000000 00:00 0 
+04048000-04150000 rw-p 00000000 00:00 0 
+04150000-04206000 rw-p 00000000 00:00 0 
+04206000-04208000 r--s 0000a000 08:01 14161165                           /home/roberto/mpba_scripts_network/minerva/tests/MINE.jar
+04208000-0420b000 r--s 0007d000 08:01 18622520                           /usr/lib/jvm/java-6-openjdk-common/jre/lib/jsse.jar
+04222000-04223000 r--p 00022000 08:01 14421469                           /lib/x86_64-linux-gnu/ld-2.15.so
+04223000-04225000 rw-p 00023000 08:01 14421469                           /lib/x86_64-linux-gnu/ld-2.15.so
+04225000-04226000 rwxp 00000000 00:00 0 
+04a25000-04a26000 r-xp 00000000 08:01 18624260                           /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+04a26000-04c25000 ---p 00001000 08:01 18624260                           /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+04c25000-04c26000 r--p 00000000 08:01 18624260                           /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+04c26000-04c27000 rw-p 00001000 08:01 18624260                           /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+04c27000-04c31000 r-xp 00000000 08:01 18624319                           /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+04c31000-04e30000 ---p 0000a000 08:01 18624319                           /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+04e30000-04e31000 r--p 00009000 08:01 18624319                           /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+04e31000-04e32000 rw-p 0000a000 08:01 18624319                           /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+04e32000-04e4a000 r-xp 00000000 08:01 14421569                           /lib/x86_64-linux-gnu/libpthread-2.15.so
+04e4a000-05049000 ---p 00018000 08:01 14421569                           /lib/x86_64-linux-gnu/libpthread-2.15.so
+05049000-0504a000 r--p 00017000 08:01 14421569                           /lib/x86_64-linux-gnu/libpthread-2.15.so
+0504a000-0504b000 rw-p 00018000 08:01 14421569                           /lib/x86_64-linux-gnu/libpthread-2.15.so
+0504b000-0504f000 rw-p 00000000 00:00 0 
+0504f000-05053000 r-xp 00000000 08:01 18750613                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+05053000-05252000 ---p 00004000 08:01 18750613                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+05252000-05253000 r--p 00003000 08:01 18750613                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+05253000-05254000 rw-p 00004000 08:01 18750613                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+05254000-05256000 r-xp 00000000 08:01 14421502                           /lib/x86_64-linux-gnu/libdl-2.15.so
+05256000-05456000 ---p 00002000 08:01 14421502                           /lib/x86_64-linux-gnu/libdl-2.15.so
+05456000-05457000 r--p 00002000 08:01 14421502                           /lib/x86_64-linux-gnu/libdl-2.15.so
+05457000-05458000 rw-p 00003000 08:01 14421502                           /lib/x86_64-linux-gnu/libdl-2.15.so
+05458000-0560b000 r-xp 00000000 08:01 14421489                           /lib/x86_64-linux-gnu/libc-2.15.so
+0560b000-0580a000 ---p 001b3000 08:01 14421489                           /lib/x86_64-linux-gnu/libc-2.15.so
+0580a000-0580e000 r--p 001b2000 08:01 14421489                           /lib/x86_64-linux-gnu/libc-2.15.so
+0580e000-05810000 rw-p 001b6000 08:01 14421489                           /lib/x86_64-linux-gnu/libc-2.15.so
+05810000-05815000 rw-p 00000000 00:00 0 
+05815000-0582b000 r-xp 00000000 08:01 14421600                           /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+0582b000-05a2a000 ---p 00016000 08:01 14421600                           /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+05a2a000-05a2b000 r--p 00015000 08:01 14421600                           /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+05a2b000-05a2c000 rw-p 00016000 08:01 14421600                           /lib/x86_64-linux-gnu/libz.so.1.2.3.4
+05a2c000-05e2c000 rwxp 00000000 00:00 0 
+05e2c000-06730000 r-xp 00000000 08:01 18883532                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+06730000-06930000 ---p 00904000 08:01 18883532                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+06930000-069b0000 r--p 00904000 08:01 18883532                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+069b0000-069cb000 rw-p 00984000 08:01 18883532                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+069cb000-069f4000 rw-p 00000000 00:00 0 
+069f4000-06ad6000 r-xp 00000000 08:01 18619036                           /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+06ad6000-06cd5000 ---p 000e2000 08:01 18619036                           /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+06cd5000-06cdd000 r--p 000e1000 08:01 18619036                           /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+06cdd000-06cdf000 rw-p 000e9000 08:01 18619036                           /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.16
+06cdf000-06cf4000 rw-p 00000000 00:00 0 
+06cf4000-06ded000 r-xp 00000000 08:01 14421521                           /lib/x86_64-linux-gnu/libm-2.15.so
+06ded000-06fec000 ---p 000f9000 08:01 14421521                           /lib/x86_64-linux-gnu/libm-2.15.so
+06fec000-06fed000 r--p 000f8000 08:01 14421521                           /lib/x86_64-linux-gnu/libm-2.15.so
+06fed000-06fee000 rw-p 000f9000 08:01 14421521                           /lib/x86_64-linux-gnu/libm-2.15.so
+06fee000-07003000 r-xp 00000000 08:01 14421510                           /lib/x86_64-linux-gnu/libgcc_s.so.1
+07003000-07202000 ---p 00015000 08:01 14421510                           /lib/x86_64-linux-gnu/libgcc_s.so.1
+07202000-07203000 r--p 00014000 08:01 14421510                           /lib/x86_64-linux-gnu/libgcc_s.so.1
+07203000-07204000 rw-p 00015000 08:01 14421510                           /lib/x86_64-linux-gnu/libgcc_s.so.1
+07204000-0720b000 r-xp 00000000 08:01 14421575                           /lib/x86_64-linux-gnu/librt-2.15.so
+0720b000-0740a000 ---p 00007000 08:01 14421575                           /lib/x86_64-linux-gnu/librt-2.15.so
+0740a000-0740b000 r--p 00006000 08:01 14421575                           /lib/x86_64-linux-gnu/librt-2.15.so
+0740b000-0740c000 rw-p 00007000 08:01 14421575                           /lib/x86_64-linux-gnu/librt-2.15.so
+0740c000-0741a000 r-xp 00000000 08:01 18753226                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libverify.so
+0741a000-07619000 ---p 0000e000 08:01 18753226                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libverify.so
+07619000-0761b000 r--p 0000d000 08:01 18753226                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libverify.so
+0761b000-0761c000 rw-p 0000f000 08:01 18753226                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libverify.so
+0761c000-07648000 r-xp 00000000 08:01 18747951                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libjava.so
+07648000-07847000 ---p 0002c000 08:01 18747951                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libjava.so
+07847000-07848000 r--p 0002b000 08:01 18747951                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libjava.so
+07848000-0784b000 rw-p 0002c000 08:01 18747951                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libjava.so
+0784b000-07853000 r-xp 00000000 08:01 14421536                           /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+07853000-07a52000 ---p 00008000 08:01 14421536                           /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+07a52000-07a53000 r--p 00007000 08:01 14421536                           /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+07a53000-07a54000 rw-p 00008000 08:01 14421536                           /lib/x86_64-linux-gnu/libnss_compat-2.15.so
+07a54000-07a6b000 r-xp 00000000 08:01 14421534                           /lib/x86_64-linux-gnu/libnsl-2.15.so
+07a6b000-07c6a000 ---p 00017000 08:01 14421534                           /lib/x86_64-linux-gnu/libnsl-2.15.so
+07c6a000-07c6b000 r--p 00016000 08:01 14421534                           /lib/x86_64-linux-gnu/libnsl-2.15.so
+07c6b000-07c6c000 rw-p 00017000 08:01 14421534                           /lib/x86_64-linux-gnu/libnsl-2.15.so
+07c6c000-07c6e000 rw-p 00000000 00:00 0 
+07c6e000-07c78000 r-xp 00000000 08:01 14421544                           /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+07c78000-07e78000 ---p 0000a000 08:01 14421544                           /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+07e78000-07e79000 r--p 0000a000 08:01 14421544                           /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+07e79000-07e7a000 rw-p 0000b000 08:01 14421544                           /lib/x86_64-linux-gnu/libnss_nis-2.15.so
+07e7a000-07e86000 r-xp 00000000 08:01 14421540                           /lib/x86_64-linux-gnu/libnss_files-2.15.so
+07e86000-08085000 ---p 0000c000 08:01 14421540                           /lib/x86_64-linux-gnu/libnss_files-2.15.so
+08085000-08086000 r--p 0000b000 08:01 14421540                           /lib/x86_64-linux-gnu/libnss_files-2.15.so
+08086000-08087000 rw-p 0000c000 08:01 14421540                           /lib/x86_64-linux-gnu/libnss_files-2.15.so
+08087000-0808e000 r-xp 00000000 08:01 18753234                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libzip.so
+0808e000-0828d000 ---p 00007000 08:01 18753234                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libzip.so
+0828d000-0828e000 r--p 00006000 08:01 18753234                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libzip.so
+0828e000-0828f000 rw-p 00007000 08:01 18753234                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/libzip.so
+0828f000-084ff000 rwxp 00000000 00:00 0 
+084ff000-0b28f000 rw-p 00000000 00:00 0 
+0b28f000-0b29a000 rw-p 00000000 00:00 0 
+0b29a000-0b2e2000 rw-p 00000000 00:00 0 
+0b2e2000-0b30b000 rw-p 00000000 00:00 0 
+0b30b000-0b570000 rw-p 00000000 00:00 0 
+0b570000-0b586000 rw-p 00000000 00:00 0 
+0b586000-0b6b8000 rw-p 00000000 00:00 0 
+0b6b8000-0b6e2000 rw-p 00000000 00:00 0 
+0b6e2000-0b948000 rw-p 00000000 00:00 0 
+0b948000-0b953000 rw-p 00000000 00:00 0 
+0b953000-0b99b000 rw-p 00000000 00:00 0 
+0b99b000-0b99c000 ---p 00000000 00:00 0 
+0b99c000-0ba9c000 rw-p 00000000 00:00 0 
+0ba9c000-0ba9d000 ---p 00000000 00:00 0 
+0ba9d000-0bb9d000 rw-p 00000000 00:00 0 
+0bb9d000-0bb9e000 ---p 00000000 00:00 0 
+0bb9e000-0bc9e000 rw-p 00000000 00:00 0 
+0bc9e000-0bc9f000 ---p 00000000 00:00 0 
+0bc9f000-0bd9f000 rw-p 00000000 00:00 0 
+0bd9f000-0bf2f000 r--s 037bc000 08:01 18753245                           /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/rt.jar
+0bf2f000-0c32f000 rwxp 00000000 00:00 0 
+0c32f000-0c330000 ---p 00000000 00:00 0 
+0c330000-0c430000 rw-p 00000000 00:00 0 
+0c430000-0c433000 ---p 00000000 00:00 0 
+0c433000-0c531000 rw-p 00000000 00:00 0 
+0c531000-0c534000 ---p 00000000 00:00 0 
+0c534000-0c632000 rw-p 00000000 00:00 0 
+0c632000-0cd1b000 r--p 00000000 08:01 18617014                           /usr/lib/locale/locale-archive
+0cd1b000-0cd1e000 ---p 00000000 00:00 0 
+0cd1e000-0ce1c000 rw-p 00000000 00:00 0 
+0ce1c000-0ce1f000 ---p 00000000 00:00 0 
+0ce1f000-0cf1d000 rw-p 00000000 00:00 0 
+0cf1d000-0cf20000 ---p 00000000 00:00 0 
+0cf20000-0d01e000 rw-p 00000000 00:00 0 
+0d01e000-0d021000 ---p 00000000 00:00 0 
+0d021000-0d11f000 rw-p 00000000 00:00 0 
+0d11f000-0d120000 ---p 00000000 00:00 0 
+0d120000-0d220000 rw-p 00000000 00:00 0 
+0d220000-0f220000 rwxp 00000000 00:00 0 
+38000000-382c6000 r-xp 00200000 08:01 18624317                           /usr/lib/valgrind/memcheck-amd64-linux
+384c5000-384c9000 rw-p 004c5000 08:01 18624317                           /usr/lib/valgrind/memcheck-amd64-linux
+384c9000-395a5000 rw-p 00000000 00:00 0 
+395b0000-395c0000 ---p 00000000 00:00 0 
+395c0000-3aa80000 rw-p 00000000 00:00 0                                  [heap]
+3aa80000-43bc0000 rw-p 00000000 00:00 0 
+43bc0000-48d90000 rw-p 00000000 00:00 0 
+48d90000-95920000 rw-p 00000000 00:00 0 
+95920000-98200000 rw-p 00000000 00:00 0 
+98200000-be7c0000 rw-p 00000000 00:00 0 
+402001000-402ad9000 rwxp 00000000 00:00 0 
+402ad9000-402adb000 ---p 00000000 00:00 0 
+402adb000-402bdb000 rwxp 00000000 00:00 0 
+402bdb000-402bdd000 ---p 00000000 00:00 0 
+402bdd000-40598f000 rwxp 00000000 00:00 0 
+40598f000-405991000 ---p 00000000 00:00 0 
+405991000-405a91000 rwxp 00000000 00:00 0 
+405a91000-405a93000 ---p 00000000 00:00 0 
+405a93000-405b4f000 rwxp 00000000 00:00 0 
+405b51000-406052000 rwxp 00000000 00:00 0 
+406052000-406054000 ---p 00000000 00:00 0 
+406054000-406154000 rwxp 00000000 00:00 0 
+406154000-406158000 ---p 00000000 00:00 0 
+406158000-406258000 rwxp 00000000 00:00 0 
+406258000-40625c000 ---p 00000000 00:00 0 
+40625c000-40635c000 rwxp 00000000 00:00 0 
+40635c000-406360000 ---p 00000000 00:00 0 
+406360000-406460000 rwxp 00000000 00:00 0 
+406460000-406464000 ---p 00000000 00:00 0 
+406464000-406564000 rwxp 00000000 00:00 0 
+406564000-406566000 ---p 00000000 00:00 0 
+406566000-40657a000 rwxp 00000000 00:00 0 
+40657a000-40657c000 ---p 00000000 00:00 0 
+40657c000-40667c000 rwxp 00000000 00:00 0 
+40667c000-40667e000 ---p 00000000 00:00 0 
+40667e000-40668a000 rwxp 00000000 00:00 0 
+40668a000-40668c000 ---p 00000000 00:00 0 
+40668c000-40678c000 rwxp 00000000 00:00 0 
+40678c000-40678e000 ---p 00000000 00:00 0 
+40678e000-406926000 rwxp 00000000 00:00 0 
+406926000-406928000 ---p 00000000 00:00 0 
+406928000-406a28000 rwxp 00000000 00:00 0 
+406a28000-406a2a000 ---p 00000000 00:00 0 
+406a2a000-406a2e000 rwxp 00000000 00:00 0 
+406a2e000-406a30000 ---p 00000000 00:00 0 
+406a30000-406b30000 rwxp 00000000 00:00 0 
+406b30000-406b32000 ---p 00000000 00:00 0 
+406b32000-406b36000 rwxp 00000000 00:00 0 
+406b36000-406b38000 ---p 00000000 00:00 0 
+406b38000-406c38000 rwxp 00000000 00:00 0 
+406c38000-406c3a000 ---p 00000000 00:00 0 
+406c3a000-406c42000 rwxp 00000000 00:00 0 
+406c42000-406c44000 ---p 00000000 00:00 0 
+406c44000-406d44000 rwxp 00000000 00:00 0 
+406d44000-406d46000 ---p 00000000 00:00 0 
+406d46000-406d4a000 rwxp 00000000 00:00 0 
+406d4a000-406d4c000 ---p 00000000 00:00 0 
+406d4c000-406e4c000 rwxp 00000000 00:00 0 
+406e4c000-406e4e000 ---p 00000000 00:00 0 
+406e4e000-409eb4000 rwxp 00000000 00:00 0 
+409eb5000-40b071000 rwxp 00000000 00:00 0 
+40b072000-40dbb3000 rwxp 00000000 00:00 0 
+40dbbb000-40dbbf000 rwxp 00000000 00:00 0 
+7fefcc000-7ff001000 rwxp 00000000 00:00 0 
+7fff0e414000-7fff0e435000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+java_command: MINE.jar Spellman.csv 0
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+LD_LIBRARY_PATH=/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/server:/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64:/usr/lib/jvm/java-6-openjdk-amd64/jre/../lib/amd64:/usr/lib/debug
+LD_PRELOAD=/usr/lib/valgrind/vgpreload_core-amd64-linux.so:/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so:/usr/lib/valgrind/vgpreload_core-amd64-linux.so:/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so:/usr/lib/valgrind/vgpreload_core-amd64-linux.so:/usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x784310], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x784310], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x648580], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x648580], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x648580], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x648580], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x648730], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x64b250], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x64b250], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x64b250], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x64b250], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Ubuntu 12.04 (precise)
+uname:Linux 3.2.0-27-generic #43-Ubuntu SMP Fri Jul 6 14:25:57 UTC 2012 x86_64
+libc:glibc 2.15 NPTL 2.15 
+rlimit: STACK 8192k, CORE 0k, NPROC 62651, NOFILE 1044, AS infinity
+load average:

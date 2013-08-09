@@ -1,0 +1,13 @@
+v. 1.2
+------
+ * added measure MIC-R^2
+
+v. 1.1
+------
+ * mine script optimized avoiding indexes preallocation
+ * computation of maximum number of clumps fixed
+ * now R>=2.14 is required: the Windows version will work only for 32 bit version available for R>=2.14
+
+v. 1.0
+------
+ * minerva has been released

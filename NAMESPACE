@@ -1,0 +1,7 @@
+## Using C API code for mine computation throuth mine_interfaces.c
+useDynLib(minerva)
+
+## Export only the needed functions
+export(mine)
+
+import(parallel)
