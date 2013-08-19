@@ -43,9 +43,11 @@ statistics. \code{mine} computes the MINE family measures between two variables.
     variables, since \code{mine} can not be computed in case of variance
     close to 0. Default value is 1e-5. Information about failed check
     are reported in \emph{var_thr.log} file. }
-  \item{eps}{ integer in [0,1]. If 'NULL' (default) it is set to
-    1-MIC. It provides robustness and should depend on the MIC of the
-relationship in question. }
+  \item{eps}{ integer in [0,1].  If 'NULL' (default) it is set to
+    1-MIC. It can be set to zero for noiseless functions,
+    but the default choice is the most appropriate parametrization
+    for general cases (as stated in Reshef et al. SOM).
+    It provides robustness. }
 \item{\dots}{ currently not used. }
 } 
 \details{\code{mine} is an R wrapper for the C engine \emph{cmine} 
