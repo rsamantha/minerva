@@ -165,7 +165,6 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
 ## For the source see src/mine_interface.c
 .allvsall <- function(x, alpha, C,eps){
   tmp <- .Call("mineRall",x,nrow(x),ncol(x),alpha,C)
-  print(tmp)
   tmp <- lapply(tmp,function(y,n){colnames(y) <- rownames(y) <- n
                                   return(y)}, n <- colnames(x))
   return(tmp)
