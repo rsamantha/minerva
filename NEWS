@@ -1,3 +1,12 @@
+V. 1.4
+------
+Added parameter epsilon to the computation of MCN measure
+
+v. 1.3
+------
+Update core function for mine computation
+High speed improving
+
 v. 1.2
 ------
  * added measure MIC-R^2

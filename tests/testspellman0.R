@@ -4,7 +4,9 @@ myalpha <- 0.6
 myc <- 15
 data(Spellman)
 Spellman <- as.matrix(Spellman)
+
 res <- mine(Spellman,master=1,n.cores=1,alpha=myalpha,C=myc)
+
 aval.cores <- detectCores()
 if (aval.cores > 1){
   cat("Multicore: On this machinhe you have ",aval.cores," computational cores.\n")
