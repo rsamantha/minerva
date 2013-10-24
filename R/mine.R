@@ -17,6 +17,7 @@
 
 
 mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, ...){
+  ## Input controls
   checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps)
   x <- checked[[1]]
   y <- checked[[2]]
@@ -51,9 +52,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
       if (length(master)==1){
         if (n.cores>1){
           res <- .onevsallparall(x,master,alpha,C,n.cores,eps)
-          ## tmp[var.idx,] <- tmp[,var.idx] <- NA
           ## return(.onevsallparall(x,master,alpha,C,n.cores,eps))
-          ## return(tmp)
         }
         else{
           res <- .onevsall(x,master,alpha,C,exclude=FALSE,eps)
@@ -88,7 +87,15 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   }
   ## Set NA variables with nearly 0 variance
   if (!is.null(var.idx))
-    res <- lapply(res,function(x,var.idx){x[var.idx,] <- x[,var.idx] <- NA}, var.idx=var.idx)
+    res <- lapply(res,
+                  function(x,var.idx){
+                    if(is.null(dim(x))){
+                      x <- NA
+                    } else {
+                      x[var.idx,] <- x[,var.idx] <- NA
+                    }
+                    return(x)},
+                  var.idx=var.idx)
   return(res)
 }
 
@@ -140,8 +147,9 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
       stop(nas," NAs found in 'y', please, consider imputing or remove them.", call.=FALSE)
     }
     ## NB remove the following comments to get back to the previous version
-    ## if (var(y)<var.thr)
-    ##   stop("'y' has variance < ", var.thr,"\n")
+    if (var(y)<var.thr)
+      var.idx <- 1
+      ## stop("'y' has variance < ", var.thr,"\n")
     
     if (dim(y)[2] != 1)
       stop("'y' must be a 1-dimensional object", call.=FALSE)
