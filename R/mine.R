@@ -185,6 +185,10 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
     if( eps<0.0 || eps>1 || !is.numeric(eps) )
       stop("'eps' must be > 0.0 and < 1.0",call.=FALSE)
   }  
+
+  if (!is.null(var.idx)){
+    warning("Found variables with nearly 0 variance")
+  }
   
   return(list(x, y, alpha, C, n.cores, eps, var.idx))
 }
