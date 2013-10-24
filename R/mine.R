@@ -24,6 +24,8 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   C <- checked[[4]]
   n.cores <- checked[[5]]
   eps <- checked[[6]]
+  var.idx <- checked[[7]]
+  
   ## only one matrix given
   if (is.null(y)){
     s <- dim(x)[1]
@@ -39,26 +41,35 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     if (is.null(master)){
       if (n.cores>1){
         ## Launch parallel
-        return(.allvsallparall(x,alpha,C,n.cores,eps))
+        res <- .allvsallparall(x,alpha,C,n.cores,eps)
+        ## return(.allvsallparall(x,alpha,C,n.cores,eps))
       } else{
-        return(.allvsall(x,alpha,C,eps))
+        res <- .allvsall(x,alpha,C,eps)
+        ## return(.allvsall(x,alpha,C,eps))
       }
     } else {
       if (length(master)==1){
         if (n.cores>1){
-          return(.onevsallparall(x,master,alpha,C,n.cores,eps))
+          res <- .onevsallparall(x,master,alpha,C,n.cores,eps)
+          ## tmp[var.idx,] <- tmp[,var.idx] <- NA
+          ## return(.onevsallparall(x,master,alpha,C,n.cores,eps))
+          ## return(tmp)
         }
         else{
-          return(.onevsall(x,master,alpha,C,exclude=FALSE,eps))
+          res <- .onevsall(x,master,alpha,C,exclude=FALSE,eps)
+          ## return(.onevsall(x,master,alpha,C,exclude=FALSE,eps))
         }
       }
       if (length(master)>1){
         newdata <- x[,master]
-        if (n.cores>1)
+        if (n.cores>1){
           ## Launch parallel
-          return(.allvsallparall(newdata,alpha,C,n.cores,eps))
-        else
-          return(.allvsall(newdata,alpha,C,eps))
+          res <- .allvsallparall(newdata,alpha,C,n.cores,eps)
+          ## return(.allvsallparall(newdata,alpha,C,n.cores,eps))
+        } else {
+          res <- .allvsall(newdata,alpha,C,eps)
+          ## return(.allvsall(newdata,alpha,C,eps))
+        }
       }
     }
   } else {
@@ -66,13 +77,18 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     if (ncol(x) == 1 && ncol(y) == 1){
       res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps)
       names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2")
-      return(as.list(res))
+      res <- as.list(res)
+      ## return(as.list(res))
     } else {
       newdata <- cbind(x,y)
       colnames(newdata)[ncol(newdata)] <- "Y"
-      return(.onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps))
+      res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps)
+      ## return(.onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps))
     }
   }
+  if (!is.null(var.idx))
+    res[var.idx,] <- res[,var.idx] <- NA
+  return(res)
 }
 
 ##--------------------------------------------------
@@ -104,10 +120,14 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
     stop("'x' must be numeric", call.=FALSE)
   stopifnot(is.atomic(x))
   x <- as.matrix(x)
+
+  ## Check variance
+  ## NB modified to return NA -> check on the mine function
+  var.idx <- NULL
   if (sum(apply(x,2,var)<var.thr)!=0){
     var.idx <- which(apply(x,2,var)<var.thr)
-    write.table(var.idx,"var_thr_x.log",col.names=FALSE,row.names=FALSE,quote=FALSE,sep=",")
-    stop("Found columns having variance < ", var.thr,"; in 'x';\nread file var_thr_x.log for more information.\n")
+    ## write.table(var.idx,"var_thr_x.log",col.names=FALSE,row.names=FALSE,quote=FALSE,sep=",")
+    ## stop("Found columns having variance < ", var.thr,"; in 'x';\nread file var_thr_x.log for more information.\n")
   }
   if (!is.null(y)) {
     if (!is.numeric(y))
@@ -118,8 +138,9 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
       nas <- sum(is.na(y))
       stop(nas," NAs found in 'y', please, consider imputing or remove them.", call.=FALSE)
     }
-    if (var(y)<var.thr)
-      stop("'y' has variance < ", var.thr,"\n")
+    ## NB remove the following comments to get back to the previous version
+    ## if (var(y)<var.thr)
+    ##   stop("'y' has variance < ", var.thr,"\n")
     
     if (dim(y)[2] != 1)
       stop("'y' must be a 1-dimensional object", call.=FALSE)
@@ -128,7 +149,6 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
   }
 
   ## Parallel computation check!
-  
   if (!is.numeric(n.cores))
     stop("'n.cores' must be numeric")
 
@@ -157,7 +177,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
       stop("'eps' must be > 0.0 and < 1.0",call.=FALSE)
   }  
   
-  return(list(x,y,alpha,C,n.cores,eps))
+  return(list(x, y, alpha, C, n.cores, eps, var.idx))
 }
 
 
