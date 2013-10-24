@@ -86,8 +86,9 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
       ## return(.onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps))
     }
   }
+  ## Set NA variables with nearly 0 variance
   if (!is.null(var.idx))
-    res[var.idx,] <- res[,var.idx] <- NA
+    res <- lapply(res,function(x,var.idx){x[var.idx,] <- x[,var.idx] <- NA}, var.idx=var.idx)
   return(res)
 }
 
