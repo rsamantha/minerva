@@ -15,7 +15,6 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, ...){
   ## Input controls
   checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps)
