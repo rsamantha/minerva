@@ -5,12 +5,13 @@ myc <- 15
 data(Spellman)
 Spellman <- as.matrix(Spellman)
 
-Spellman
+## Spellman[,2] <- 0
+mydata <- Spellman[,1:10]
 
-res <- mine(Spellman,master=2,n.cores=2,alpha=myalpha,C=myc)
+res <- mine(Spellman,master=1,n.cores=5,alpha=myalpha,C=myc)
 
-
-res <- mine(mydata,n.cores=6,alpha=myalpha,C=myc)
+mydata[,2] <- 0
+res <- mine(mydata,master=2,n.cores=6,alpha=myalpha,C=myc)
 
 
 

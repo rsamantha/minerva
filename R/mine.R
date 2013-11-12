@@ -91,10 +91,19 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
                     if(is.null(dim(x))){
                       x <- NA
                     } else {
-                      x[var.idx,] <- x[,var.idx] <- NA
+                      if (length(master)==1) {
+                        if (any(var.idx==master)){
+                          x[,1] <- NA
+                        } else {
+                          x[var.idx,] <- NA
+                        }
+                      } else {
+                        x[var.idx,] <- x[,var.idx] <- NA
+                      }
                     }
                     return(x)},
                   var.idx=var.idx)
+  
   return(res)
 }
 
