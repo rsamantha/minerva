@@ -23,3 +23,13 @@ if (aval.cores > 2){
   cat("We suggest to exploit minerva parallel computing possibilities with ",aval.cores-1," cores.\n(where possible set 'n.cores = 3')\n")
 cat("Test ok!!!\n")
 }
+
+
+library(nettools)
+for (i in 1:10) {
+  idx <- sample(ncol(Spellman),1000)
+  aa <- mat2adj(Spellman[,idx],method="ARACNE")
+  write.table(aa,paste("test_data_",i,".csv",sep=""),
+              col.names=NA,row.nam=TRUE, sep="\t",
+              quote=FALSE)
+}

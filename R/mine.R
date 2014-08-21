@@ -89,16 +89,16 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     res <- lapply(res,
                   function(x,var.idx){
                     if(is.null(dim(x))){
-                      x <- NA
+                      x <- 0.0
                     } else {
                       if (length(master)==1) {
                         if (any(var.idx==master)){
-                          x[,1] <- NA
+                          x[,1] <- 0.0
                         } else {
-                          x[var.idx,] <- NA
+                          x[var.idx,] <- 0.0
                         }
                       } else {
-                        x[var.idx,] <- x[,var.idx] <- NA
+                        x[var.idx,] <- x[,var.idx] <- 0.0
                       }
                     }
                     return(x)},
