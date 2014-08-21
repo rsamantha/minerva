@@ -1,5 +1,6 @@
 library(minerva)
-## library(parallel)
+library(parallel)
+
 myalpha <- 0.6
 myc <- 15
 data(Spellman)
@@ -9,11 +10,6 @@ Spellman <- as.matrix(Spellman)
 mydata <- Spellman[,1:10]
 
 res <- mine(Spellman,master=1,n.cores=5,alpha=myalpha,C=myc)
-
-mydata[,2] <- 0
-res <- mine(mydata,master=2,n.cores=6,alpha=myalpha,C=myc)
-
-
 
 aval.cores <- detectCores()
 if (aval.cores > 1){

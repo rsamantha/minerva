@@ -16,7 +16,8 @@
 \description{Maximal Information-Based Nonparametric Exploration (MINE) 
 statistics. \code{mine} computes the MINE family measures between two variables. 
 }
-\usage{mine(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL)}
+\usage{mine(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1,
+var.thr=1e-5, eps=NULL, ...)}
 \arguments{
   \item{x}{ a numeric vector (of size \emph{n}), matrix or data frame (which is coerced 
     to matrix). }
