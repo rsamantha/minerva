@@ -9,7 +9,7 @@ Spellman <- as.matrix(Spellman)
 ## Spellman[,2] <- 0
 mydata <- Spellman[,1:10]
 
-res <- mine(Spellman,master=1,n.cores=5,alpha=myalpha,C=myc)
+res <- mine(Spellman,master=1,n.cores=1,alpha=myalpha,C=myc)
 
 aval.cores <- detectCores()
 if (aval.cores > 1){
