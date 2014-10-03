@@ -15,9 +15,9 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, ...){
+mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, na.rm=FALSE, ...){
   ## Input controls
-  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps)
+  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, na.rm)
   x <- checked[[1]]
   y <- checked[[2]]
   alpha <- checked[[3]]
@@ -25,11 +25,20 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   n.cores <- checked[[5]]
   eps <- checked[[6]]
   var.idx <- checked[[7]]
+  na.rm <- checked[[8]]
   
   ## only one matrix given
   if (is.null(y)){
     s <- dim(x)[1]
     f <- dim(x)[2]
+
+    ## Check for na and overwrite the input
+    ## No need to store the input
+    if (na.rm){
+      x <- na.omit(x)
+    }
+    
+    ## If a master variable is passed check the type
     if (!is.null(master)){
       if (!is.numeric(master))
         stop("'master' must be numeric")
@@ -71,6 +80,13 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
       }
     }
   } else {
+
+    ## Check for na and overwrite the inputs
+    if (na.rm){
+      x <- na.omit(x)
+      y <- na.omit(y)
+    }
+    
     ## two variables given
     if (ncol(x) == 1 && ncol(y) == 1){
       res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps)
@@ -115,7 +131,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
 ## x should be a matrix or a vector
 ##   if x is a vector y should be given
 ## y should be a one dimensional vector
-check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
+check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
 
   ## MINE parameters check!
   if (alpha<=0.0 || alpha>1.0 || !is.numeric(alpha))
@@ -126,7 +142,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
   ## Data check!
   if (is.data.frame(x))
     x <- as.matrix(x)
-  if (any(is.na(x))){
+  if (any(is.na(x)) & !na.rm){
     nas <- sum(is.na(x))
     stop(nas," NAs found in 'x', please, consider imputing or remove them.", call.=FALSE)
   }
@@ -140,7 +156,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
   ## Check variance
   ## NB modified to return NA -> check on the mine function
   var.idx <- NULL
-  if (sum(apply(x,2,var)<var.thr)!=0){
+  if (sum(apply(x,2,var, na.rm=TRUE)<var.thr)!=0){
     var.idx <- which(apply(x,2,var)<var.thr)
     ## write.table(var.idx,"var_thr_x.log",col.names=FALSE,row.names=FALSE,quote=FALSE,sep=",")
     ## stop("Found columns having variance < ", var.thr,"; in 'x';\nread file var_thr_x.log for more information.\n")
@@ -197,8 +213,12 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps) {
   if (!is.null(var.idx)){
     warning("Found variables with nearly 0 variance")
   }
+
+  if (!is.logical(na.rm)){
+    na.rm <- FALSE
+  }
   
-  return(list(x, y, alpha, C, n.cores, eps, var.idx))
+  return(list(x, y, alpha, C, n.cores, eps, var.idx, na.rm))
 }
 
 
