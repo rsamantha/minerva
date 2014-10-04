@@ -166,7 +166,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
       stop("'y' must be numeric", call.=FALSE)
     stopifnot(is.atomic(y))
     y <- as.matrix(y)
-    if (any(is.na(y))){
+    if (any(is.na(y)) & !na.rm){
       nas <- sum(is.na(y))
       stop(nas," NAs found in 'y', please, consider imputing or remove them.", call.=FALSE)
     }
