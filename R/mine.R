@@ -171,7 +171,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
       stop(nas," NAs found in 'y', please, consider imputing or remove them.", call.=FALSE)
     }
     ## NB remove the following comments to get back to the previous version
-    if (var(y)<var.thr)
+    if (var(y, na.rm=TRUE)<var.thr)
       var.idx <- 1
       ## stop("'y' has variance < ", var.thr,"\n")
     

@@ -17,8 +17,8 @@
 Summary:
   \tabular{ll}{
   Package: \tab minerva\cr
-  Version: \tab 1.4.2\cr
-  Date: \tab 2014-10-03\cr
+  Version: \tab 1.4.3\cr
+  Date: \tab 2014-10-06\cr
   Depends: \tab R >= (2.14.0)\cr
   Enshances: \tab parallel\cr
   URL: \tab http://www.r-project.org, \cr
