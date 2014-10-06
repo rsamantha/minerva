@@ -15,9 +15,10 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, na.rm=FALSE, ...){
-  ## Input controls
-  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, na.rm)
+mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, na.rm=FALSE, use="all.obs", ...){
+
+  ## Control on input arguments
+  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, na.rm, use)
   x <- checked[[1]]
   y <- checked[[2]]
   alpha <- checked[[3]]
@@ -26,7 +27,8 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   eps <- checked[[6]]
   var.idx <- checked[[7]]
   na.rm <- checked[[8]]
-  
+  use <- checked[[9]]
+
   ## only one matrix given
   if (is.null(y)){
     s <- dim(x)[1]
@@ -34,7 +36,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
 
     ## Check for na and overwrite the input
     ## No need to store the input
-    if (na.rm){
+    if (na.rm || use %in% c(2L, 3L)){
       x <- na.omit(x)
     }
     
@@ -79,29 +81,30 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
         }
       }
     }
-  } else {
-
+  } else { ## y is given
     ## Check for na and overwrite the inputs
-    if (na.rm){
-      x <- na.omit(x)
-      y <- na.omit(y)
+    ## pairwise.complete.obs // complete.obs
+    if (use%in% c(2L,3L)){
+      xidx <- (apply(!is.na(x), 1, sum))
+      yidx <- !is.na(y)
+      idx <- xidx & yidx
     }
     
     ## two variables given
-    if (ncol(x) == 1 && ncol(y) == 1){
+    if (ncol(x) == 1 & ncol(y) == 1){
       res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps)
       names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2")
       res <- as.list(res)
-      ## return(as.list(res))
     } else {
       newdata <- cbind(x,y)
       colnames(newdata)[ncol(newdata)] <- "Y"
       res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps)
-      ## return(.onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps))
     }
   }
+  
   ## Set NA variables with nearly 0 variance
-  if (!is.null(var.idx))
+  ## TODO: set NA with nearly 0 variance when y is passed as arguments
+  if (!is.null(var.idx[["X"]]))
     res <- lapply(res,
                   function(x,var.idx){
                     if(is.null(dim(x))){
@@ -118,31 +121,38 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
                       }
                     }
                     return(x)},
-                  var.idx=var.idx)
-  
+                  var.idx=var.idx[["x"]])
+
+  ## Return results
   return(res)
 }
 
 ##--------------------------------------------------
-## Function for internal use!
+## Functions for internal use!
 ##--------------------------------------------------
 
 ## Checking input integrity
 ## x should be a matrix or a vector
 ##   if x is a vector y should be given
 ## y should be a one dimensional vector
-check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
+check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
 
   ## MINE parameters check!
   if (alpha<=0.0 || alpha>1.0 || !is.numeric(alpha))
     stop("'alpha' must be in (0.0, 1.0]",call.=FALSE)
   if(C<=0.0 || !is.numeric(C))
     stop("'C' must be > 0.0",call.=FALSE)
+
+  ## use argument
+  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+        "everything"))
+  if (is.na(na.method))
+    stop("invalid 'use' argument")
   
   ## Data check!
   if (is.data.frame(x))
     x <- as.matrix(x)
-  if (any(is.na(x)) & !na.rm){
+  if (any(is.na(x)) & !(na.rm| na.method %in% c(2L,3L))){
     nas <- sum(is.na(x))
     stop(nas," NAs found in 'x', please, consider imputing or remove them.", call.=FALSE)
   }
@@ -154,13 +164,12 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
   x <- as.matrix(x)
 
   ## Check variance
-  ## NB modified to return NA -> check on the mine function
-  var.idx <- NULL
-  if (sum(apply(x,2,var, na.rm=TRUE)<var.thr)!=0){
-    var.idx <- which(apply(x,2,var)<var.thr)
-    ## write.table(var.idx,"var_thr_x.log",col.names=FALSE,row.names=FALSE,quote=FALSE,sep=",")
-    ## stop("Found columns having variance < ", var.thr,"; in 'x';\nread file var_thr_x.log for more information.\n")
-  }
+  var.idx <- list()
+  myvar <- apply(x,2,var,na.rm=TRUE)
+  if (sum(myvar<var.thr)!=0)
+    var.idx[["x"]] <- which(myvar<var.thr)
+  
+  ## y not empty
   if (!is.null(y)) {
     if (!is.numeric(y))
       stop("'y' must be numeric", call.=FALSE)
@@ -170,18 +179,20 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
       nas <- sum(is.na(y))
       stop(nas," NAs found in 'y', please, consider imputing or remove them.", call.=FALSE)
     }
-    ## NB remove the following comments to get back to the previous version
+    ## Check variance on argument y
     if (var(y, na.rm=TRUE)<var.thr)
-      var.idx <- 1
-      ## stop("'y' has variance < ", var.thr,"\n")
-    
+      var.idx[["y"]] <- c(var.idx,1)
+
+    ## Control dimensions of y
     if (dim(y)[2] != 1)
       stop("'y' must be a 1-dimensional object", call.=FALSE)
+
+    ## Consistency check between x and y
     if (nrow(y) != nrow(x))
       stop ("'x' and 'y': incompatible dimensions", call.=FALSE)
   }
-
-  ## Parallel computation check!
+  
+  ## Check for parallel computing
   if (!is.numeric(n.cores))
     stop("'n.cores' must be numeric")
 
@@ -192,7 +203,6 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
   }
   
   if (n.cores > 1){
-    
     if (detectCores()==1){
       warning("Only 1 core available on this machine:'n.cores' will be ignored.\nPlease consider using a cluster.",
               immediate.=TRUE)
@@ -205,20 +215,22 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm) {
     stop("You are trying to compute mic using ",n.cores," cores.. are you sure?", call.=FALSE)
   }
   
+  ## Check epsilon parameter for MINE
   if(!is.null(eps)){
     if( eps<0.0 || eps>1 || !is.numeric(eps) )
       stop("'eps' must be > 0.0 and < 1.0",call.=FALSE)
   }  
 
-  if (!is.null(var.idx)){
+  ## Send a warning if variable with 0 variance have been found
+  if (!is.null(var.idx[["x"]]) || !is.null(var.idx[["y"]])){
     warning("Found variables with nearly 0 variance")
   }
 
-  if (!is.logical(na.rm)){
+  ## Check if na.rm is a boolean or a integer
+  if (length(na.rm)>1 || (!is.logical(na.rm) && !is.integer(na.rm)))
     na.rm <- FALSE
-  }
   
-  return(list(x, y, alpha, C, n.cores, eps, var.idx, na.rm))
+  return(list(x, y, alpha, C, n.cores, eps, var.idx, na.rm, na.method))
 }
 
 
