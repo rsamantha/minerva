@@ -152,9 +152,9 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
   ## Data check!
   if (is.data.frame(x))
     x <- as.matrix(x)
-  if (any(is.na(x)) & !(na.rm| na.method %in% c(2L,3L))){
-    nas <- sum(is.na(x))
-    stop(nas," NAs found in 'x', please, consider imputing or remove them.", call.=FALSE)
+  if (any(is.na(x)) & !(na.rm | na.method %in% c(2L,3L))){
+    # nas <- sum(is.na(x))
+    stop("Missing values present in input variable 'x'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
   }
   if (!is.matrix(x) && is.null(y))
     stop("supply both 'x' and 'y' or a matrix-like 'x'", call.=FALSE)
@@ -176,8 +176,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
     stopifnot(is.atomic(y))
     y <- as.matrix(y)
     if (any(is.na(y)) & !na.rm){
-      nas <- sum(is.na(y))
-      stop(nas," NAs found in 'y', please, consider imputing or remove them.", call.=FALSE)
+      stop("Missing values present in input variable 'x'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
     }
     ## Check variance on argument y
     if (var(y, na.rm=TRUE)<var.thr)
