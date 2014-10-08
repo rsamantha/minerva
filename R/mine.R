@@ -17,6 +17,7 @@
 
 mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, na.rm=FALSE, use="all.obs", ...){
 
+
   ## Control on input arguments
   checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, na.rm, use)
   x <- checked[[1]]
@@ -28,7 +29,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   var.idx <- checked[[7]]
   na.rm <- checked[[8]]
   use <- checked[[9]]
-
+  
   ## only one matrix given
   if (is.null(y)){
     s <- dim(x)[1]
@@ -36,7 +37,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
 
     ## Check for na and overwrite the input
     ## No need to store the input
-    if (na.rm || use %in% c(2L, 3L)){
+    if (na.rm | use %in% c(2L, 3L)){
       x <- na.omit(x)
     }
     
@@ -83,11 +84,14 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     }
   } else { ## y is given
     ## Check for na and overwrite the inputs
+
     ## pairwise.complete.obs // complete.obs
-    if (use%in% c(2L,3L)){
+    if (na.rm | use%in% c(2L,3L)){
       xidx <- (apply(!is.na(x), 1, sum))
       yidx <- !is.na(y)
       idx <- xidx & yidx
+      x <- as.matrix(x[idx,])
+      y <- as.matrix(y[idx,])
     }
     
     ## two variables given
@@ -104,7 +108,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   
   ## Set NA variables with nearly 0 variance
   ## TODO: set NA with nearly 0 variance when y is passed as arguments
-  if (!is.null(var.idx[["X"]]))
+  if (!is.null(var.idx[["x"]]))
     res <- lapply(res,
                   function(x,var.idx){
                     if(is.null(dim(x))){
@@ -145,15 +149,16 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
 
   ## use argument
   na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
-        "everything"))
+                             "everything"))
   if (is.na(na.method))
     stop("invalid 'use' argument")
   
   ## Data check!
   if (is.data.frame(x))
     x <- as.matrix(x)
+
+  ## Check for NA/missing values
   if (any(is.na(x)) & !(na.rm | na.method %in% c(2L,3L))){
-    # nas <- sum(is.na(x))
     stop("Missing values present in input variable 'x'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
   }
   if (!is.matrix(x) && is.null(y))
@@ -175,9 +180,12 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
       stop("'y' must be numeric", call.=FALSE)
     stopifnot(is.atomic(y))
     y <- as.matrix(y)
-    if (any(is.na(y)) & !na.rm){
-      stop("Missing values present in input variable 'x'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
+
+    ## Check for NA/missing values
+    if (any(is.na(y)) & !(na.rm | na.method %in% c(2L,3L))){
+      stop("Missing values present in input variable 'y'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
     }
+    
     ## Check variance on argument y
     if (var(y, na.rm=TRUE)<var.thr)
       var.idx[["y"]] <- c(var.idx,1)
