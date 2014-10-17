@@ -83,7 +83,6 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
       }
     }
   } else { ## y is given
-    ## Check for na and overwrite the inputs
 
     ## pairwise.complete.obs // complete.obs
     if (na.rm | use%in% c(2L,3L)){

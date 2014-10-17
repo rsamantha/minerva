@@ -23,6 +23,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
+
 double pearson(mine_problem *myprobl){
   double r=0.0, xmean=0.0, ymean=0.0;
   double sx=0.0, sy=0.0;
