@@ -346,3 +346,15 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
   }
   return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5))
 }
+
+## .getMmatrix <- function(x,y, alpha, C){
+##   ## MINE parameters check!
+##   if (alpha<=0.0 || alpha>1.0 || !is.numeric(alpha))
+##     stop("'alpha' must be in (0.0, 1.0]",call.=FALSE)
+##   if(C<=0.0 || !is.numeric(C))
+##     stop("'C' must be > 0.0",call.=FALSE)
+
+##   res <- .Call("getMmatrix", as.double(x), as.double(y), alpha, C, package("minerva"))
+
+##   return (res)
+##  }

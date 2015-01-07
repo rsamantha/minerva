@@ -18,6 +18,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "mine.h"
 #include <R.h>
@@ -62,8 +63,9 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
   PROTECT(alpha = coerceVector(alpha,REALSXP));
   PROTECT(C = coerceVector(C,INTSXP));
   PROTECT(res=allocVector(REALSXP,5));
+  
   restmp=REAL(res);
-    
+  
   param = (mine_parameter *) Calloc(1,mine_parameter);
   param->alpha=asReal(alpha);
   param->c=asReal(C);
@@ -86,12 +88,79 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
   
   restmp[4]=restmp[0] - pearson(prob);
   
+
   /* Free */
   Free(prob);
   Free(param);
   mine_free_score(&minescore);
   UNPROTECT(3);
   return(res);
+}
+
+SEXP getMmatrix(SEXP x, SEXP y, SEXP alpha, SEXP C)
+{
+  int n, i, j;
+  char buffer[10];
+  mine_problem *prob;
+  mine_parameter *param;
+  mine_score *minescore;
+  SEXP M, mydim, dimnames, colnames;
+  
+  PROTECT(alpha = coerceVector(alpha,REALSXP));
+  PROTECT(C = coerceVector(C,INTSXP));
+
+  param = (mine_parameter *) Calloc(1,mine_parameter);
+  param->alpha=asReal(alpha);
+  param->c=asReal(C);
+  
+  prob = (mine_problem *) Calloc(1,mine_problem);
+  prob->n=length(x);
+  prob->x=REAL(x);
+  prob->y=REAL(y);
+  
+  minescore=mine_compute_score(prob,param);
+
+  /* Get the Mutual Information matrix */
+  n = minescore->n;
+  PROTECT(M=allocVector(REALSXP,n*n));
+
+  /* initialize M matrix */
+  for (i=0; i<n*n; i++){
+	REAL(M)[i] = NILSXP;
+  }
+  for (i=0; i<n; i++){
+	for (j=0; j<minescore->m[i]; j++){
+	  REAL(M)[(n*j) + i] = minescore->M[i][j];
+	  //printf("%.3lf\t", minescore->M[i][j]);
+ 	}
+	//printf("\n");
+  }
+  
+  PROTECT(mydim=allocVector(INTSXP, 2));
+  INTEGER(mydim)[0] = n;
+  INTEGER(mydim)[1] = n;
+  
+  setAttrib(M, R_DimSymbol, mydim);
+  PROTECT(dimnames = allocVector(VECSXP, 2));
+  PROTECT(colnames = allocVector(STRSXP, n));
+  
+  for (i=0; i<n; i++){
+	sprintf(buffer, "%d", i+2);
+	SET_STRING_ELT(colnames, i, mkChar(buffer));
+	//CHAR(xnames)[i] = (char) (i + 2);
+	//CHAR(ynames)[n-i-1] = (char) (minescore->m[i] + 1);
+  }
+
+  SET_VECTOR_ELT(dimnames, 0, colnames);
+  SET_VECTOR_ELT(dimnames, 1, colnames);
+  setAttrib(M, R_DimNamesSymbol, dimnames);
+  
+  /* Free */
+  Free(prob);
+  Free(param);
+  mine_free_score(&minescore);
+  UNPROTECT(6);
+  return(M);
 }
 
 SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps)
@@ -203,4 +272,5 @@ SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps)
   /* Return a named list of 4 matrix */
   return(res);
 }
+
 
