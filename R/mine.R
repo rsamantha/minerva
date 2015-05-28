@@ -96,7 +96,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     ## two variables given
     if (ncol(x) == 1 & ncol(y) == 1){
       res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps)
-      names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2")
+      names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
       res <- as.list(res)
     } else {
       newdata <- cbind(x,y)
@@ -267,18 +267,22 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
   Mat3 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
   Mat4 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
   Mat5 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+  Mat6 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+  Mat7 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
   
   for (i in start:f){
     res <- .Call("mineRonevar",as.double(x[,idx]),as.double(x[,i]),
                  alpha=alpha,C=C,eps=eps,package="minerva")
-    names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2")
+    names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
     Mat1[i,1] <- res["MIC"]
     Mat2[i,1] <- res["MAS"]
     Mat3[i,1] <- res["MEV"]
     Mat4[i,1] <- res["MCN"]
     Mat5[i,1] <- res["MIC-R2"]
+    Mat6[i,1] <- res["GMIC"]
+    Mat7[i,1] <- res["TIC"]
   }
-  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5))
+  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5,GMIC=Mat6, TIC=Mat7))
 }
 
 ## Parallel implementation of one vs all function
@@ -298,15 +302,19 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
   Mat3 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
   Mat4 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
   Mat5 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
-
+  Mat6 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
+  Mat7 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
+  
   for (i in 1:f){
     Mat1[i,1] <- res[[i]][1]
     Mat2[i,1] <- res[[i]][2]
     Mat3[i,1] <- res[[i]][3]
     Mat4[i,1] <- res[[i]][4]
     Mat5[i,1] <- res[[i]][5]
+    Mat6[i,1] <- res[[i]][6]
+    Mat7[i,1] <- res[[i]][7]
   }
-  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5))
+  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5,GMIC=Mat6,TIC=Mat7))
 }
 
 ## Parallel implementation of all vs all function
@@ -325,6 +333,8 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
   Mat3 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))
   Mat4 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))
   Mat5 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))
+  Mat6 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))
+  Mat7 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))
   
   for (i in seq(length(res))){
 
@@ -342,7 +352,13 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
 
     Mat5[i,i:f] <- res[[i]][[5]][i:f,]
     Mat5[i:f,i] <- res[[i]][[5]][i:f,]
-    
+
+    Mat6[i,i:f] <- res[[i]][[6]][i:f,]
+    Mat6[i:f,i] <- res[[i]][[6]][i:f,]
+
+    Mat7[i,i:f] <- res[[i]][[7]][i:f,]
+    Mat7[i:f,i] <- res[[i]][[7]][i:f,]
+
   }
-  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5))
+  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5,GMIC=Mat6,TIC=Mat7))
 }
