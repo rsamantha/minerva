@@ -826,22 +826,31 @@ mine_score *mine_compute_score(mine_problem *prob, mine_parameter *param)
       k = MAX((int) (param->c * (score->m[i]+1)), 1);
       
       ret = EquipartitionYAxis(yy, prob->n, i+2, Q_map, &q);
-      
+      if (ret)
+  	goto error_0;
+
       /* sort Q by x */
       for (j=0; j<prob->n; j++)
-	Q_map_temp[iy[j]] = Q_map[j];
+  	Q_map_temp[iy[j]] = Q_map[j];
       for (j=0; j<prob->n; j++)
-	Q_map[j] = Q_map_temp[ix[j]];
+  	Q_map[j] = Q_map_temp[ix[j]];
       
       ret = GetSuperclumpsPartition(xx, prob->n, k, Q_map,
-				    P_map, &p);
+  				    P_map, &p);
       if (ret)
-	goto error_0;
+  	goto error_0;
       
-      ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p,
-			  score->m[i]+1, score->M[i]);
+      if (param->est == EST_MIC_APPROX)
+  	ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p,
+  			    score->m[i]+1, score->M[i]);
+      else /* EST_MIC_E */
+  	ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p,
+  			    MIN(i+2, score->m[i]+1), score->M[i]);
+
+      //printf("i: %i, x: %i , max_y_approx: %i, max_y_e: %i\n", i, i+2, score->m[i]+1, MIN(i+2, score->m[i]+1));
+
       if (ret)
-	goto error_0;
+  	goto error_0;
     }
   
   /* y vs. x */
@@ -850,26 +859,39 @@ mine_score *mine_compute_score(mine_problem *prob, mine_parameter *param)
       k = MAX((int) (param->c * (score->m[i]+1)), 1);
       
       ret = EquipartitionYAxis(xx, prob->n, i+2, Q_map, &q);
-      
+      if (ret)
+  	goto error_0;
+
       /* sort Q by y */
       for (j=0; j<prob->n; j++)
-	Q_map_temp[ix[j]] = Q_map[j];
+  	Q_map_temp[ix[j]] = Q_map[j];
       for (j=0; j<prob->n; j++)
-	Q_map[j] = Q_map_temp[iy[j]];
+  	Q_map[j] = Q_map_temp[iy[j]];
       
       ret = GetSuperclumpsPartition(yy, prob->n, k, Q_map,
-				    P_map, &p);
+  				    P_map, &p);
       if (ret)
-	goto error_0;
+  	goto error_0;
       
-      ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p,
-			  score->m[i]+1, M_temp);
+      if (param->est == EST_MIC_APPROX)
+  	ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p,
+  			    score->m[i]+1, M_temp);
+      else /* EST_MIC_E */
+  	ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p,
+  			    MIN(i+2, score->m[i]+1), M_temp);
+
+      //printf("i: %i, y: %i , max_x_approx: %i, max_x_e: %i\n", i, i+2, score->m[i]+1, MIN(i+2, score->m[i]+1));
+
       if (ret)
-	goto error_0;
+  	goto error_0;
       
-      for (j=0; j<score->m[i]; j++)
-	score->M[j][i] = MAX(M_temp[j], score->M[j][i]);
-    }
+      if (param->est == EST_MIC_APPROX)
+  	for (j=0; j<score->m[i]; j++)
+  	  score->M[j][i] = MAX(M_temp[j], score->M[j][i]);
+      else /* EST_MIC_E */
+  	for (j=0; j<MIN(i+1, score->m[i]); j++)
+  	  score->M[j][i] = M_temp[j];
+   }
   
   free(M_temp);
   free(iy);
@@ -1022,6 +1044,101 @@ double mine_mcn_general(mine_score *score)
       }
 
   return score_min;
+}
+
+
+/* Returns the e Generalized Mean Information Coefficient (GMIC) */
+double mine_gmic(mine_score *score, double p)
+{
+  int i, j, k, Z, B;
+  mine_score *score_sub, *C_star;
+  double gmic;
+  
+  /* alloc score_sub */
+  score_sub = (mine_score *) malloc (sizeof(mine_score));
+  
+  /* alloc C_star */
+  C_star = (mine_score *) malloc (sizeof(mine_score));
+  C_star->m = (int *) malloc(score->n * sizeof(int));
+  C_star->M = (double **) malloc (score->n * sizeof(double *));
+  for (i=0; i<score->n; i++)
+    C_star->M[i] = (double *) malloc ((score->m[i]) * sizeof(double));  
+     
+  /* prepare score_sub */
+  score_sub->M = score->M;
+
+  /* prepare C_star */
+  C_star->n = score->n;
+  for (i=0; i<C_star->n; i++)
+    C_star->m[i] = score->m[i];
+   
+  /* compute C_star */
+  for (i=0; i<score->n; i++)
+    for (j=0; j<score->m[i]; j++)
+      {
+	B = (i+2) * (j+2);
+	score_sub->n = MAX((int) floor(B/2.0), 2) - 1;
+	score_sub->m = (int *) malloc(score_sub->n * sizeof(int));
+	for (k=0; k<score_sub->n; k++)
+	  score_sub->m[k] = (int) floor((double) B / (double) (k+2)) - 1;
+	
+	C_star->M[i][j] = mine_mic(score_sub);
+	free(score_sub->m);
+      }
+  
+  /* p=0 -> geometric mean */
+  if (p == 0.0)
+    {
+      Z = 0;
+      gmic = 1.0;
+      for (i=0; i<C_star->n; i++)
+	for (j=0; j<C_star->m[i]; j++)
+	  {
+	    gmic *= C_star->M[i][j];
+	    Z++;
+	  }
+      gmic = pow(gmic, (double) Z);
+    }
+  /* p!=0 -> generalized mean */
+  else
+    {
+      Z = 0;
+      gmic = 0.0;
+      for (i=0; i<C_star->n; i++)
+	for (j=0; j<C_star->m[i]; j++)
+	  {
+	    gmic += pow(C_star->M[i][j], p);
+	    Z++;
+	  }
+      gmic /= (double) Z;
+      gmic = pow(gmic, 1.0/p);
+    }
+
+  free(score_sub);
+  if (C_star->n != 0)
+    {
+      free(C_star->m);
+      for (i=0; i<C_star->n; i++)
+ 	free(C_star->M[i]);
+      free(C_star->M);
+    }
+  free(C_star);
+
+  return gmic;
+}
+
+
+/* Returns the Total Information Coefficient (TIC). */
+double mine_tic(mine_score *score)
+{
+  int i, j;
+  double tic = 0.0;
+  
+  for (i=0; i<score->n; i++)
+    for (j=0; j<score->m[i]; j++)
+      tic += score->M[i][j];
+       
+  return tic;
 }
 
 
