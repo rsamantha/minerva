@@ -1,0 +1,19 @@
+citHeader("To cite the 'minerva' package in publications use:")
+
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
+vers <- paste("R package version", meta$Version)
+
+citEntry(entry="article",
+	title="Minerva and minepy: a C engine for the MINE suite and its R, Python and MATLAB wrappers",
+	author=personList(as.person("Davide Albanese"),
+			  as.person("Michele Filosi"),
+			  as.person("Roberto Visintainer"),
+			  as.person("Samantha Riccadonna"),
+			  as.person("Giuseppe Jurman"),
+			  as.person("Cesare Furlanello")),
+	journal="Bioinformatics",
+	pages="bts707",
+	year="2012",
+	publisher="Oxford Univ Press",
+	textVersion=paste("Albanese, Davide, et al.", "Minerva and minepy: a C engine for the MINE suite and its R, Python and MATLAB wrappers.","Bioinformatics (2012): bts707")
+)

@@ -1,3 +1,10 @@
+V. 1.4.5
+------
+- Improve NA control in input
+- Added support to GMIC and TIC from upgrade of the original paper
+- Added citation for the package
+
+
 V. 1.4
 ------
 Added parameter epsilon to the computation of MCN measure
