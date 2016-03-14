@@ -1,3 +1,6 @@
+## Stats package
+importFrom("stats", "na.omit", "var")
+
 ## Using C API code for mine computation throuth mine_interfaces.c
 useDynLib(minerva)
 

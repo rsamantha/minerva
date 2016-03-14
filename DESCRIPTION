@@ -1,6 +1,6 @@
 Package: minerva
 Version: 1.4.5
-Date: 2016-02-29
+Date: 2016-03-14
 Title: Maximal Information-Based Nonparametric Exploration R
         Package for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
@@ -13,11 +13,11 @@ Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         role = "ctb", email = "furlan@fbk.eu"))
 Depends: R (>= 2.14.0)
 Imports: parallel
-Description: R wrapper for cmine implementation of Maximal
+Description: R wrapper for 'cmine' implementation of Maximal
         Information-based Nonparametric Exploration statistics (MIC and
-        MINE family).
-URL: http://www.r-project.org, http://mpba.fbk.eu/cmine,
-        http://minepy.sourceforge.net, http://www.exploredata.net
+        MINE family). Detailed information of the ANSI C implementation 'cmine'
+	can be found at 'http://mpba.fbk.eu/cmine'.
+URL:  http://mpba.fbk.eu/cmine, http://minepy.sourceforge.net, http://www.exploredata.net, http://www.r-project.org
 License: GPL-3
 Packaged: 2013-01-07 15:56:24 UTC; roberto
 Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Davide
