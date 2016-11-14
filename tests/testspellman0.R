@@ -10,7 +10,8 @@ mydata <- Spellman[,1:10]
 
 res <- mine(Spellman,master=1,n.cores=1,alpha=myalpha,C=myc)
 
-res <- mine(mydata, n.cores=1, var.thr=0.0, use="pair")
+res <- mine(mydata, n.cores=1, var.thr=0.0, use="pair", est="mic_approx")
+
 
 ## aval.cores <- detectCores()
 ## if (aval.cores > 1){
