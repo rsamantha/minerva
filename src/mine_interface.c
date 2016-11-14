@@ -50,7 +50,7 @@ double pearson(mine_problem *myprobl){
   return(r * r);
 }
 
-SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
+SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps, SEXP est){
   
   double *restmp;
   double EPS;
@@ -67,6 +67,7 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
   param = (mine_parameter *) Calloc(1,mine_parameter);
   param->alpha=asReal(alpha);
   param->c=asReal(C);
+  param->est=asInteger(est);
   
   prob = (mine_problem *) Calloc(1,mine_problem);
   prob->n=length(x);
@@ -87,7 +88,7 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
   restmp[4]=restmp[0] - pearson(prob);
 
   restmp[5]=mine_gmic(minescore, -1); 
-  restmp[6]=mine_tic(minescore);
+  restmp[6]=mine_tic(minescore, FALSE);
   
   /* Free */
   Free(prob);
@@ -97,7 +98,7 @@ SEXP mineRonevar (SEXP x, SEXP y, SEXP alpha, SEXP C, SEXP eps){
   return(res);
 }
 
-SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps)
+SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps, SEXP est)
 {
   R_len_t i, j, rx, cx;
   double score, EPS;
@@ -110,6 +111,7 @@ SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps)
   param = (mine_parameter *) Calloc(1,mine_parameter);
   param->alpha=asReal(alpha);
   param->c=asReal(C);
+  param->est=asInteger(est);
   
   /* Matrix dimension */
   rx=asInteger(nrx);
@@ -182,7 +184,7 @@ SEXP mineRall (SEXP x, SEXP nrx, SEXP ncx, SEXP alpha, SEXP C, SEXP eps)
       REAL(resgmic)[(cx*j) + i] = score;
       REAL(resgmic)[(cx*i) + j] = score;
 
-  	  score=mine_tic(minescore);
+      score=mine_tic(minescore, FALSE);
       REAL(restic)[(cx*j) + i] = score;
       REAL(restic)[(cx*i) + j] = score;
 
