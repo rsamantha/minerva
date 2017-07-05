@@ -15,7 +15,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, est="mic_aprox",
+mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, est="mic_approx",
                  na.rm=FALSE, use="all.obs", ...){
 
   ## Control on input arguments
@@ -96,13 +96,13 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     
     ## two variables given
     if (ncol(x) == 1 & ncol(y) == 1){
-      res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps, est="")
+      res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps, est=est)
       names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
       res <- as.list(res)
     } else {
       newdata <- cbind(x,y)
       colnames(newdata)[ncol(newdata)] <- "Y"
-      res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps)
+      res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps=eps,est=est)
     }
   }
   
@@ -282,7 +282,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   
   for (i in start:f){
     res <- .Call("mineRonevar",as.double(x[,idx]),as.double(x[,i]),
-                 alpha=alpha,C=C,eps=eps, est=est, package="minerva")
+                 alpha=alpha,C=C,eps=eps, est=est)
     names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
     Mat1[i,1] <- res["MIC"]
     Mat2[i,1] <- res["MAS"]
@@ -303,7 +303,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   cl <- makeCluster(n.cores)
   res <- parLapply(cl,1:f,function(i,master,alpha,C,data,eps,est){
     return(.Call("mineRonevar",as.double(data[,master]),
-                 as.double(data[,i]),alpha=alpha,C=C,eps=eps,package="minerva"))},
+                 as.double(data[,i]),alpha=alpha,C=C,eps=eps,est=est))},
                    master=master,alpha=alpha,C=C,eps=eps,est=est,data=x)
   stopCluster(cl)
   
