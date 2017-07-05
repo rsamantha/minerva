@@ -15,119 +15,119 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, na.rm=FALSE, use="all.obs", ...){
-
-
-  ## Control on input arguments
-  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, na.rm, use)
-  x <- checked[[1]]
-  y <- checked[[2]]
-  alpha <- checked[[3]]
-  C <- checked[[4]]
-  n.cores <- checked[[5]]
-  eps <- checked[[6]]
-  var.idx <- checked[[7]]
-  na.rm <- checked[[8]]
-  use <- checked[[9]]
-  
-  ## only one matrix given
-  if (is.null(y)){
-    s <- dim(x)[1]
-    f <- dim(x)[2]
-
-    ## Check for na and overwrite the input
-    ## No need to store the input
-    if (na.rm | use %in% c(2L, 3L)){
-      x <- na.omit(x)
-    }
+mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, est="mic_approx", na.rm=FALSE, use="all.obs", ...){
     
-    ## If a master variable is passed check the type
-    if (!is.null(master)){
-      if (!is.numeric(master))
-        stop("'master' must be numeric")
-      if (max(master)>f)
-        stop("Subscript out of bound!\nMaximum value allowed: ",f)
-      if (min(master)<1)
-        stop("Subscript out of bound!\nMinimum value allowed: ",1)
-    }
-    if (is.null(master)){
-      if (n.cores>1){
-        ## Launch parallel
-        res <- .allvsallparall(x,alpha,C,n.cores,eps)
-        ## return(.allvsallparall(x,alpha,C,n.cores,eps))
-      } else{
-        res <- .allvsall(x,alpha,C,eps)
-        ## return(.allvsall(x,alpha,C,eps))
-      }
-    } else {
-      if (length(master)==1){
-        if (n.cores>1){
-          res <- .onevsallparall(x,master,alpha,C,n.cores,eps)
-          ## return(.onevsallparall(x,master,alpha,C,n.cores,eps))
+    ## Control on input arguments
+    checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, na.rm, use, est)
+    x <- checked[[1]]
+    y <- checked[[2]]
+    alpha <- checked[[3]]
+    C <- checked[[4]]
+    n.cores <- checked[[5]]
+    eps <- checked[[6]]
+    var.idx <- checked[[7]]
+    na.rm <- checked[[8]]
+    use <- checked[[9]]
+    approx <- checked[[10]]
+    
+    ## only one matrix given
+    if (is.null(y)){
+        s <- dim(x)[1]
+        f <- dim(x)[2]
+
+        ## Check for na and overwrite the input
+        ## No need to store the input
+        if (na.rm | use %in% c(2L, 3L)){
+            x <- na.omit(x)
         }
-        else{
-          res <- .onevsall(x,master,alpha,C,exclude=FALSE,eps)
-          ## return(.onevsall(x,master,alpha,C,exclude=FALSE,eps))
+        
+        ## If a master variable is passed check the type
+        if (!is.null(master)){
+            if (!is.numeric(master))
+                stop("'master' must be numeric")
+            if (max(master)>f)
+                stop("Subscript out of bound!\nMaximum value allowed: ",f)
+            if (min(master)<1)
+                stop("Subscript out of bound!\nMinimum value allowed: ",1)
         }
-      }
-      if (length(master)>1){
-        newdata <- x[,master]
-        if (n.cores>1){
-          ## Launch parallel
-          res <- .allvsallparall(newdata,alpha,C,n.cores,eps)
-          ## return(.allvsallparall(newdata,alpha,C,n.cores,eps))
+        if (is.null(master)){
+            if (n.cores>1){
+                ## Launch parallel
+                res <- .allvsallparall(x,alpha,C,n.cores,eps, approx)
+                ## return(.allvsallparall(x,alpha,C,n.cores,eps))
+            } else{
+                res <- .allvsall(x,alpha,C,eps, approx)
+                ## return(.allvsall(x,alpha,C,eps))
+            }
         } else {
-          res <- .allvsall(newdata,alpha,C,eps)
-          ## return(.allvsall(newdata,alpha,C,eps))
+            if (length(master)==1){
+                if (n.cores>1){
+                    res <- .onevsallparall(x,master,alpha,C,n.cores,eps, approx)
+                    ## return(.onevsallparall(x,master,alpha,C,n.cores,eps))
+                }
+                else{
+                    res <- .onevsall(x,master,alpha,C,exclude=FALSE,eps, approx)
+                    ## return(.onevsall(x,master,alpha,C,exclude=FALSE,eps))
+                }
+            }
+            if (length(master)>1){
+                newdata <- x[,master]
+                if (n.cores>1){
+                    ## Launch parallel
+                    res <- .allvsallparall(newdata,alpha,C,n.cores,eps, approx)
+                    ## return(.allvsallparall(newdata,alpha,C,n.cores,eps))
+                } else {
+                    res <- .allvsall(newdata,alpha,C,eps, approx)
+                    ## return(.allvsall(newdata,alpha,C,eps))
+                }
+            }
         }
-      }
-    }
-  } else { ## y is given
+    } else { ## y is given
 
-    ## pairwise.complete.obs // complete.obs
-    if (na.rm | use%in% c(2L,3L)){
-      xidx <- (apply(!is.na(x), 1, sum))
-      yidx <- !is.na(y)
-      idx <- xidx & yidx
-      x <- as.matrix(x[idx,])
-      y <- as.matrix(y[idx,])
+        ## pairwise.complete.obs // complete.obs
+        if (na.rm | use%in% c(2L,3L)){
+            xidx <- (apply(!is.na(x), 1, sum))
+            yidx <- !is.na(y)
+            idx <- xidx & yidx
+            x <- as.matrix(x[idx,])
+            y <- as.matrix(y[idx,])
+        }
+        
+        ## two variables given
+        if (ncol(x) == 1 & ncol(y) == 1){
+            res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps, approx=approx)
+            names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
+            res <- as.list(res)
+        } else {
+            newdata <- cbind(x,y)
+            colnames(newdata)[ncol(newdata)] <- "Y"
+            res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps, approx=approx)
+        }
     }
     
-    ## two variables given
-    if (ncol(x) == 1 & ncol(y) == 1){
-      res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps)
-      names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
-      res <- as.list(res)
-    } else {
-      newdata <- cbind(x,y)
-      colnames(newdata)[ncol(newdata)] <- "Y"
-      res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps)
-    }
-  }
-  
-  ## Set NA variables with nearly 0 variance
-  ## TODO: set NA with nearly 0 variance when y is passed as arguments
-  if (!is.null(var.idx[["x"]]))
-    res <- lapply(res,
-                  function(x,var.idx){
-                    if(is.null(dim(x))){
-                      x <- 0.0
-                    } else {
-                      if (length(master)==1) {
-                        if (any(var.idx==master)){
-                          x[,1] <- 0.0
-                        } else {
-                          x[var.idx,] <- 0.0
-                        }
-                      } else {
-                        x[var.idx,] <- x[,var.idx] <- 0.0
-                      }
-                    }
-                    return(x)},
-                  var.idx=var.idx[["x"]])
+    ## Set NA variables with nearly 0 variance
+    ## TODO: set NA with nearly 0 variance when y is passed as arguments
+    if (!is.null(var.idx[["x"]]))
+        res <- lapply(res,
+                      function(x,var.idx){
+                          if(is.null(dim(x))){
+                              x <- 0.0
+                          } else {
+                              if (length(master)==1) {
+                                  if (any(var.idx==master)){
+                                      x[,1] <- 0.0
+                                  } else {
+                                      x[var.idx,] <- 0.0
+                                  }
+                              } else {
+                                  x[var.idx,] <- x[,var.idx] <- 0.0
+                              }
+                          }
+                          return(x)},
+                      var.idx=var.idx[["x"]])
 
-  ## Return results
-  return(res)
+    ## Return results
+    return(res)
 }
 
 ##--------------------------------------------------
@@ -138,163 +138,165 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
 ## x should be a matrix or a vector
 ##   if x is a vector y should be given
 ## y should be a one dimensional vector
-check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
+check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use, approx) {
 
-  ## MINE parameters check!
-  if (alpha<=0.0 || alpha>1.0 || !is.numeric(alpha))
-    stop("'alpha' must be in (0.0, 1.0]",call.=FALSE)
-  if(C<=0.0 || !is.numeric(C))
-    stop("'C' must be > 0.0",call.=FALSE)
+    ## MINE parameters check!
+    if (alpha<=0.0 || alpha>1.0 || !is.numeric(alpha))
+        stop("'alpha' must be in (0.0, 1.0]",call.=FALSE)
+    if(C<=0.0 || !is.numeric(C))
+        stop("'C' must be > 0.0",call.=FALSE)
 
-  ## use argument
-  na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
-                             "everything"))
-  if (is.na(na.method))
-    stop("invalid 'use' argument")
-  
-  ## Data check!
-  if (is.data.frame(x))
-    x <- as.matrix(x)
-
-  ## Check for NA/missing values
-  if (any(is.na(x)) & !(na.rm | na.method %in% c(2L,3L))){
-    stop("Missing values present in input variable 'x'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
-  }
-  if (!is.matrix(x) && is.null(y))
-    stop("supply both 'x' and 'y' or a matrix-like 'x'", call.=FALSE)
-  if (!is.numeric(x))
-    stop("'x' must be numeric", call.=FALSE)
-  stopifnot(is.atomic(x))
-  x <- as.matrix(x)
-
-  ## Check variance
-  var.idx <- list()
-  myvar <- apply(x,2,var,na.rm=TRUE)
-  if (sum(myvar<var.thr)!=0)
-    var.idx[["x"]] <- which(myvar<var.thr)
-  
-  ## y not empty
-  if (!is.null(y)) {
-    if (!is.numeric(y))
-      stop("'y' must be numeric", call.=FALSE)
-    stopifnot(is.atomic(y))
-    y <- as.matrix(y)
+    ## use argument
+    na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs", 
+                               "everything"))
+    if (is.na(na.method))
+        stop("invalid 'use' argument")
+    
+    ## Data check!
+    if (is.data.frame(x))
+        x <- as.matrix(x)
 
     ## Check for NA/missing values
-    if (any(is.na(y)) & !(na.rm | na.method %in% c(2L,3L))){
-      stop("Missing values present in input variable 'y'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
+    if (any(is.na(x)) & !(na.rm | na.method %in% c(2L,3L))){
+        stop("Missing values present in input variable 'x'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
+    }
+    if (!is.matrix(x) && is.null(y))
+        stop("supply both 'x' and 'y' or a matrix-like 'x'", call.=FALSE)
+    if (!is.numeric(x))
+        stop("'x' must be numeric", call.=FALSE)
+    stopifnot(is.atomic(x))
+    x <- as.matrix(x)
+
+    ## Check variance
+    var.idx <- list()
+    myvar <- apply(x,2,var,na.rm=TRUE)
+    if (sum(myvar<var.thr)!=0)
+        var.idx[["x"]] <- which(myvar<var.thr)
+    
+    ## y not empty
+    if (!is.null(y)) {
+        if (!is.numeric(y))
+            stop("'y' must be numeric", call.=FALSE)
+        stopifnot(is.atomic(y))
+        y <- as.matrix(y)
+
+        ## Check for NA/missing values
+        if (any(is.na(y)) & !(na.rm | na.method %in% c(2L,3L))){
+            stop("Missing values present in input variable 'y'. Consider using use = 'pairwise.complete.obs'.", call.=FALSE)
+        }
+        
+        ## Check variance on argument y
+        if (var(y, na.rm=TRUE)<var.thr)
+            var.idx[["y"]] <- c(var.idx,1)
+
+        ## Control dimensions of y
+        if (dim(y)[2] != 1)
+            stop("'y' must be a 1-dimensional object", call.=FALSE)
+
+        ## Consistency check between x and y
+        if (nrow(y) != nrow(x))
+            stop ("'x' and 'y': incompatible dimensions", call.=FALSE)
     }
     
-    ## Check variance on argument y
-    if (var(y, na.rm=TRUE)<var.thr)
-      var.idx[["y"]] <- c(var.idx,1)
+    ## Check for parallel computing
+    if (!is.numeric(n.cores))
+        stop("'n.cores' must be numeric")
 
-    ## Control dimensions of y
-    if (dim(y)[2] != 1)
-      stop("'y' must be a 1-dimensional object", call.=FALSE)
-
-    ## Consistency check between x and y
-    if (nrow(y) != nrow(x))
-      stop ("'x' and 'y': incompatible dimensions", call.=FALSE)
-  }
-  
-  ## Check for parallel computing
-  if (!is.numeric(n.cores))
-    stop("'n.cores' must be numeric")
-
-  if (!exists("detectCores")){
-    n.cores <- 1
-    warning("It seems you have an old version of R (<2.14).\nMulticore computing using 'parallel' is not available.\n'n.cores' has been set to 1",
-            immediate.=TRUE)
-  }
-  
-  if (n.cores > 1){
-    if (detectCores()==1){
-      warning("Only 1 core available on this machine:'n.cores' will be ignored.\nPlease consider using a cluster.",
-              immediate.=TRUE)
-      n.cores <- 1
+    if (!exists("detectCores")){
+        n.cores <- 1
+        warning("It seems you have an old version of R (<2.14).\nMulticore computing using 'parallel' is not available.\n'n.cores' has been set to 1",
+                immediate.=TRUE)
     }
-    if (n.cores>detectCores())
-      stop("Query for more cores then the available ones.\n Max number of cores for this machine is: ",detectCores())
-  }
-  if (n.cores <= 0){
-    stop("You are trying to compute mic using ",n.cores," cores.. are you sure?", call.=FALSE)
-  }
-  
-  ## Check epsilon parameter for MINE
-  if(!is.null(eps)){
-    if( eps<0.0 || eps>1 || !is.numeric(eps) )
-      stop("'eps' must be > 0.0 and < 1.0",call.=FALSE)
-  }  
+    
+    if (n.cores > 1){
+        if (detectCores()==1){
+            warning("Only 1 core available on this machine:'n.cores' will be ignored.\nPlease consider using a cluster.",
+                    immediate.=TRUE)
+            n.cores <- 1
+        }
+        if (n.cores>detectCores())
+            stop("Query for more cores then the available ones.\n Max number of cores for this machine is: ",detectCores())
+    }
+    if (n.cores <= 0){
+        stop("You are trying to compute mic using ",n.cores," cores.. are you sure?", call.=FALSE)
+    }
+    
+    ## Check epsilon parameter for MINE
+    if(!is.null(eps)){
+        if( eps<0.0 || eps>1 || !is.numeric(eps) )
+            stop("'eps' must be > 0.0 and < 1.0",call.=FALSE)
+    }  
 
-  ## Send a warning if variable with 0 variance have been found
-  if (!is.null(var.idx[["x"]]) || !is.null(var.idx[["y"]])){
-    warning("Found variables with nearly 0 variance")
-  }
+    ## Send a warning if variable with 0 variance have been found
+    if (!is.null(var.idx[["x"]]) || !is.null(var.idx[["y"]])){
+        warning("Found variables with nearly 0 variance")
+    }
 
-  ## Check if na.rm is a boolean or a integer
-  if (length(na.rm)>1 || (!is.logical(na.rm) && !is.integer(na.rm)))
-    na.rm <- FALSE
-  
-  return(list(x, y, alpha, C, n.cores, eps, var.idx, na.rm, na.method))
+    ## Check if na.rm is a boolean or a integer
+    if (length(na.rm)>1 || (!is.logical(na.rm) && !is.integer(na.rm)))
+        na.rm <- FALSE
+
+    ## Set EST_MIC_APPROX / EST_MIC_E variable (should be boolean)
+    ## If TRUE run with EST_MIC_APPROX
+    if(length(grep("mic_approx|mic_e", approx)) < 1)
+        warning("'approx' parameter do not match with available methods. Set to 'mic_approx' by default")
+    est <- switch(approx, "mic_approx"=0, "mic_e"=1, 0)
+    
+    return(list(x, y, alpha, C, n.cores, eps, var.idx, na.rm, na.method, est))
 }
 
 
 ## Calling all features vs all features using C implementation
 ## For the source see src/mine_interface.c
-.allvsall <- function(x, alpha, C,eps){
-  tmp <- .Call("mineRall",x,nrow(x),ncol(x),alpha,C, eps)
+.allvsall <- function(x, alpha, C,eps, approx){
+  tmp <- .Call("mineRall",x,nrow(x),ncol(x),alpha,C, eps, approx)
   tmp <- lapply(tmp,function(y,n){colnames(y) <- rownames(y) <- n
-                                  return(y)}, n <- colnames(x))
+      return(y)}, n <- colnames(x)
+      )
   return(tmp)
 }
 
 ## Calling feature x[,idx] vs all other features
 ## Using C implementation feature vs feature
 ## For the source see src/mine_interface.c
-.onevsall <- function(x,idx,alpha,C,eps,exclude,diagonal=FALSE){
-  if (exclude)
-    f <- dim(x)[2]-1
-  else
-    f <- dim(x)[2]
-  if (diagonal)
-    start <- idx
-  else
-    start <- 1
-  
-  Mat1 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  Mat2 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  Mat3 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  Mat4 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  Mat5 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  Mat6 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  Mat7 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
-  
-  for (i in start:f){
-    res <- .Call("mineRonevar",as.double(x[,idx]),as.double(x[,i]),
-                 alpha=alpha,C=C,eps=eps,package="minerva")
-    names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
-    Mat1[i,1] <- res["MIC"]
-    Mat2[i,1] <- res["MAS"]
-    Mat3[i,1] <- res["MEV"]
-    Mat4[i,1] <- res["MCN"]
-    Mat5[i,1] <- res["MIC-R2"]
-    Mat6[i,1] <- res["GMIC"]
-    Mat7[i,1] <- res["TIC"]
-  }
-  return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5,GMIC=Mat6, TIC=Mat7))
+.onevsall <- function(x,idx,alpha,C,eps,exclude, approx, diagonal=FALSE){
+    f <- ifelse(exclude, dim(x)[2] - 1, dim(x)[2])
+    start <- ifelse(diagonal, idx, 1)
+    
+    Mat1 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    Mat2 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    Mat3 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    Mat4 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    Mat5 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    Mat6 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    Mat7 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[idx]))
+    
+    for (i in start:f){
+        res <- .Call("mineRonevar",as.double(x[,idx]),as.double(x[,i]),
+                     alpha=alpha,C=C,eps=eps, approx=approx, package="minerva")
+        names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
+        Mat1[i,1] <- res["MIC"]
+        Mat2[i,1] <- res["MAS"]
+        Mat3[i,1] <- res["MEV"]
+        Mat4[i,1] <- res["MCN"]
+        Mat5[i,1] <- res["MIC-R2"]
+        Mat6[i,1] <- res["GMIC"]
+        Mat7[i,1] <- res["TIC"]
+    }
+    return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5,GMIC=Mat6, TIC=Mat7))
 }
 
 ## Parallel implementation of one vs all function
 ## NB using 'parallel' package from CRAN for R >= 2.14
 ## If older version of R install multicore package
-.onevsallparall <- function(x,master,alpha,C,n.cores,eps){
+.onevsallparall <- function(x,master,alpha,C,n.cores,eps, approx){
   f <- dim(x)[2]
   cl <- makeCluster(n.cores)
-  res <- parLapply(cl,1:f,function(i,master,alpha,C,data,eps){
-    return(.Call("mineRonevar",as.double(data[,master]),
-                 as.double(data[,i]),alpha=alpha,C=C,eps=eps,package="minerva"))},
-                   master=master,alpha=alpha,C=C,eps=eps,data=x)
+  res <- parLapply(cl,1:f,function(i,master,alpha,C,data,eps, approx){
+      return(.Call("mineRonevar",as.double(data[,master]),
+                   as.double(data[,i]),alpha=alpha,C=C,eps=eps,
+                   approx=approx, package="minerva"))},
+                   master=master,alpha=alpha,C=C,eps=eps,data=x, approx=approx)
   stopCluster(cl)
   
   Mat1 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
@@ -320,12 +322,12 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,na.rm,use) {
 ## Parallel implementation of all vs all function
 ## NB using 'parallel' package from CRAN for R >= 2.14
 ## If older version of R install multicore package
-.allvsallparall <- function(x, alpha, C, n.cores,eps){
+.allvsallparall <- function(x, alpha, C, n.cores,eps, approx){
   f <- dim(x)[2]
   cl <- makeCluster(n.cores)
   res <- parLapply(cl,1:f,function(y,data,alpha,C,eps){
     return(.onevsall(x=data,idx=y,alpha=alpha,C=C,eps=eps,exclude=FALSE,diagonal=TRUE))},
-                   data=x,alpha=alpha,C=C,eps=eps)
+                   data=x,alpha=alpha,C=C,eps=eps, approx=approx)
   
   stopCluster(cl)
   Mat1 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))
