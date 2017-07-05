@@ -61,7 +61,7 @@ var.thr=1e-5, eps=NULL, est="mic_approx", na.rm=FALSE, use="all.obs",  ...)}
 \item{\dots}{ currently not used. }
 } 
 \details{\code{mine} is an R wrapper for the C engine \emph{cmine} 
-(\url{http://mpba.fbk.eu/cmine}), 
+(\url{http://minepy.readthedocs.io/en/latest/}), 
 an implementation of Maximal Information-Based Nonparametric Exploration (MINE) 
 statistics. The MINE statistics were firstly detailed in 
 D. Reshef et al. (2011) \emph{Detecting novel associations in large datasets}. 
@@ -151,8 +151,6 @@ obtain a solution closer to the theoretical one.
   (SOM: Supplementary Online Material at
   \url{http://www.sciencemag.org/content/suppl/2011/12/14/334.6062.1518.DC1})
   
-  \url{http://mpba.fbk.eu/cmine}
-
   \emph{minepy. Maximal Information-based Nonparametric Exploration in C and Python.}\cr 
   \url{http://minepy.sourceforge.net}
   }
