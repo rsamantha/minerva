@@ -1,29 +1,28 @@
 Package: minerva
 Version: 1.4.6
 Date: 2017-07-05
-Title: minerva: Maximal Information-Based Nonparametric Exploration R
-        package for Variable Analysis
+Title: Minerva: Maximal Information-Based Nonparametric Exploration R
+        Package for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
-        = "filosi@fbk.eu"), person("Roberto", "Visintainer", role =
-        "aut", email = "visintainer@fbk.eu"), person("Davide",
-        "Albanese", role = "aut", email = "albanese@fbk.eu"),
+        = "michele.filosi@unitn.it"), person("Roberto", "Visintainer", role =
+        "aut", email = "roberto.visintainer@unitn.eu"), person("Davide",
+        "Albanese", role = "aut", email = "davide.albanese@fmach.it"),
         person("Samantha", "Riccadonna", role = "ctb", email =
-        "riccadonna@fbk.eu"), person("Giuseppe", "Jurman", role =
+        "samantha.riccadonna@fmach.it"), person("Giuseppe", "Jurman", role =
         "ctb", email = "jurman@fbk.eu"), person("Cesare", "Furlanello",
         role = "ctb", email = "furlan@fbk.eu"))
 Depends: R (>= 2.14.0)
 Imports: parallel
-Suggest: testhat
+Suggests: testthat
 Description: R wrapper for cmine implementation of Maximal
         Information-based Nonparametric Exploration statistics (MIC and
         MINE family).
-URL: http://www.r-project.org, http://mpba.fbk.eu/cmine,
-        http://minepy.sourceforge.net, http://www.exploredata.net
+URL: https://www.r-project.org, http://minepy.readthedocs.io/en/latest/, http://www.exploredata.net
 License: GPL-3
 Packaged: 2016-11-14
 Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Davide
         Albanese [aut], Samantha Riccadonna [ctb], Giuseppe Jurman
         [ctb], Cesare Furlanello [ctb]
-Maintainer: Michele Filosi <filosi@fbk.eu>
+Maintainer: Michele Filosi <michele.filosi@unitn.it>
 Repository: CRAN
 Date/Publication: 2013-01-07 17:53:58
