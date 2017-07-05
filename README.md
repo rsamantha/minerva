@@ -1,12 +1,11 @@
-minerva
-=======
+# minerva
+
 
 R package for Maximal Information-Based Nonparametric Exploration computation
 
 * [Homepage](http://minepy.readthedocs.io/en/latest/)
 * [Github](https://github.com/minepy/minepy)
 
--------------------------------------------------------------------------------
 
 ## Install
 * Latest cran release
@@ -17,7 +16,6 @@ install.packages("minerva")
 ```
 devtools::install_github('rsamantha/minerva')
 ```
--------------------------------------------------------------------------------
 
 ## Usage
 ```
@@ -27,7 +25,6 @@ x <- 0:200 / 200
 y <- sin(10 * pi * x) + x
 mine(x,y, n.cores=1)
 ```
--------------------------------------------------------------------------------
 
 ## Citing minepy/minerva 
 Davide Albanese, Michele Filosi, Roberto Visintainer, Samantha
