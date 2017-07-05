@@ -17,7 +17,7 @@ Suggests: testthat
 Description: R wrapper for 'minepy' implementation of Maximal
         Information-based Nonparametric Exploration statistics (MIC and
         MINE family). Detailed information of the ANSI C implementation of
-	'minepy' can be found at <http://minepy.readthedocs.io/en/latest/>.
+	'minepy' can be found at http://minepy.readthedocs.io/en/latest/.
 URL: https://www.r-project.org, http://minepy.readthedocs.io/en/latest/, http://www.exploredata.net
 License: GPL-3
 Packaged: 2016-11-14
