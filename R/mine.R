@@ -229,8 +229,8 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   }  
 
   ## Check est parameter for MIC
-  ## mic_approx -> 1  
-  ## mic_e -> 2
+  ## mic_approx -> 0
+  ## mic_e -> 1
     
   EST <- 0
   if (est == "mic_e"){
