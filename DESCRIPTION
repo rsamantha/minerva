@@ -20,11 +20,11 @@ Description: Wrapper for 'minepy' implementation of Maximal
 	'minepy' can be found at <http://minepy.readthedocs.io/en/latest>.
 URL: https://www.r-project.org, http://minepy.readthedocs.io/en/latest, http://www.exploredata.net
 License: GPL-3
-Packaged: 2017-07-20
+Packaged: 2018-12-04
 Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Davide
         Albanese [aut], Samantha Riccadonna [ctb], Giuseppe Jurman
         [ctb], Cesare Furlanello [ctb]
-Maintainer: Michele Filosi <michele.filosi@unitn.it>
+Maintainer: Michele Filosi <michele.filosi@gmail.com>
 Repository: CRAN
 Date/Publication: 2013-01-07 17:53:58
 RoxygenNote: 6.1.1
