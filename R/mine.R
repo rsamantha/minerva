@@ -15,6 +15,242 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#' MINE family statistics
+#' Maximal Information-Based Nonparametric Exploration (MINE) 
+#' statistics. \code{mine} computes the MINE family measures between two variables. 
+#'
+#' @aliases mine MINE  MIC-R2  mic-r2
+#' 
+#' @param x a numeric vector (of size \emph{n}), matrix or data frame (which is coerced to matrix). 
+#' @param y  NULL (default) or a numeric vector of size \emph{n} (\emph{i.e.}, with compatible dimensions to x).
+#' @param master an optional vector of indices (numeric or character) to
+#' be given when \code{y} is not set, otherwise master is ignored. It can be 
+#' either one column index to be used as reference for the comparison 
+#' (versus all other columns) or a vector of column indices to be used for 
+#' computing all mutual statistics.
+# If not specified it is set to \code{1:ncol(x)}. 
+#' @param alpha an optional number of cells allowed in the \emph{X-by-Y} search-grid. Default value is 0.6 (see Details).
+#' @param C an optional number determining the starting point of the 
+#' \emph{X-by-Y} search-grid. When trying to partition the \emph{x}-axis into 
+#' \emph{X} columns, the algorithm will start with at most \code{C}\emph{X} 
+#' \emph{clumps}. Default value is 15 (see Details). 
+#' @param n.cores ooptional number of cores to be used in the
+#' computations, when master is specified. It requires the
+#' \pkg{parallel} package, which provides support for parallel 
+#' computing, released with \R >= 2.14.0. Defaults is 1 (\emph{i.e.}, not performing parallel computing). 
+#' @param var.thr  minimum value allowed for the variance of the input
+#' variables, since \code{mine} can not be computed in case of variance
+#' close to 0. Default value is 1e-5. Information about failed check
+#' are reported in \emph{var_thr.log} file. 
+#' @param eps integer in [0,1].  If 'NULL' (default) it is set to
+#' 1-MIC. It can be set to zero for noiseless functions,
+#' but the default choice is the most appropriate parametrization
+#' for general cases (as stated in Reshef et al. SOM).
+#' It provides robustness. 
+#' @param est Default value is "mic_approx". With est="mic_approx" the original MINE statistics will
+#' be computed, with est="mic_e" the equicharacteristic matrix is
+#' is evaluated and the mic() and tic() methods will return MIC_e and
+#' TIC_e values respectively.
+#' @param na.rm boolean. This variable is passed directly to the
+#' \code{cor}-based functions. See \code{cor} for further details.
+#' @param use Default value is "all.obs". This variable is passed directly to the 
+#' `cor`-based functions. See [stats::cor()] for further details.
+#' @param ... currently ignored
+#' @details [mine()] is an R wrapper for the C engine _cmine_
+#' (<http://minepy.readthedocs.io/en/latest/>), 
+#' an implementation of Maximal Information-Based Nonparametric Exploration (MINE) 
+#' statistics. The MINE statistics were firstly detailed in 
+#' D. Reshef et al. (2011) _Detecting novel associations in large datasets_. 
+#' Science 334, 6062 (<http://www.exploredata.net>).
+#'
+#' Here we recall the main concepts of the MINE family statistics.
+#' Let \eqn{D={(x,y)}} be the set of _n_ ordered pairs of elements of `x` 
+#' and `y`. The data space is partitioned in 
+#' an _X-by-Y_ grid, grouping the _x_ and _y_ values 
+#' in _X_ and _Y_ bins respectively.
+#'
+#' The **Maximal Information Coefficient (MIC)** is defined as 
+#' \deqn{\textrm{MIC}(D)=\max_{XY<B(n)} M(D)_{X,Y} = \max_{XY<B(n)} \frac{I^*(D,X,Y)}{log(\min{X,Y})},}{MIC(D)=max_{XY<B(n)} M(D)_{X,Y}=max_{XY<B(n)} I*(D,X,Y)/log(min(X,Y)),} where
+#' \eqn{B(n)=n^{\alpha}} is the search-grid size,
+#' \eqn{I^*(D,X,Y)}{I*(D,X,Y)}
+#' is the maximum mutual information over all grids _X-by-Y_, of the distribution induced by D on 
+#' a grid having _X_ and _Y_ bins (where the probability mass on a cell 
+#' of the grid is the fraction of points of D falling in that cell). 
+#' The other statistics of the MINE family are derived from the mutual information 
+#' matrix achieved by an _X-by-Y_ grid on D.
+#' 
+#' The **Maximum Asymmetry Score (MAS)** is defined as 
+#' \deqn{\textrm{MAS}(D) = \max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}{MAS(D) = max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}
+#' 
+#' The **Maximum Edge Value (MEV)** is defined as 
+#' \deqn{\textrm{MEV}(D) = \max_{XY<B(n)} \{M(D)_{X,Y}: X=2~or~Y=2\}.}{MEV(D) = max_{XY<B(n)} {M(D)_{X,Y}: X=2 or Y=2}.}
+#' 
+#' The **Minimum Cell Number (MCN)** is defined as
+#' \deqn{\textrm{MCN}(D,\epsilon) = \min_{XY<B(n)} \{\log(XY): M(D)_{X,Y} \geq (1-\epsilon)MIC(D)\}.}{MCN(D,\epsilon) = min_{XY<B(n)} {log(XY): M(D)_{X,Y} >= (1-\epsilon)MIC(D)}.}
+#' More details are provided in the supplementary material (SOM) of the original paper.
+#' 
+#' The MINE statistics can be computed for two numeric vectors `x` and `y`. 
+#' Otherwise a matrix (or data frame) can be provided and two options are available 
+#' according to the value of `master`. If `master` is a column identifier, 
+#' then the MINE statistics are computed for the _master_ variable versus the 
+#' other matrix columns. If `master`` is a set of column identifiers, then all 
+#' mutual MINE statistics are computed among the column subset.
+#' `master`, `alpha`, and `C` refers respectively to the _style_,
+#' _exp_, and _c_ parameters of the original _java_ code. 
+#' In the original article, the authors state that the default value \eqn{\alpha=0.6} 
+#' (which is the exponent of the search-grid size \eqn{B(n)=n^{\alpha}}) has been 
+#' empirically chosen. It is worthwhile noting that `alpha` and `C` are 
+#' defined to obtain an heuristic approximation in a reasonable amount of time. In case
+#' of small sample size (_n_) it is preferable to increase `alpha` to 1 to 
+#' obtain a solution closer to the theoretical one.
+#' @return The Maximal Information-Based Nonparametric Exploration (MINE) statistics 
+#' provide quantitative evaluations of different aspects of the relationship 
+#' between two variables. 
+#' In particular \code{mine} returns a list of 5 statistics: 
+#'   * _MIC_ **Maximal Information Coefficient.**
+#'      It is related to the relationship strenght and it can be interpreted as a 
+#'      correlation measure. It is symmetric and it ranges in (0,1), where it 
+#'      tends to 0 for statistically independent data and it approaches 1 in 
+#'      probability for noiseless functional relationships (more details can 
+#'      be found in the original paper).
+#'    * _MAS_ **Maximum Asymmetry Score.** 
+#'      It captures the deviation from monotonicity. Note that 
+#'      \eqn{\textrm{MAS} < \textrm{MIC}}{MAS < MIC}.
+#'      \emph{Note:} it can be useful for detecting periodic relationships 
+#'      (unknown frequencies).
+#'    * _MEV_ **Maximum Edge Value.** 
+#'      It measures the closeness to being a function. Note that 
+#'      \eqn{\textrm{MEV} \leq \textrm{MIC}}{MEV <= MIC}.
+#'    * _MCN_ **Minimum Cell Number.** 
+#'      It is a complexity measure.
+#'    * _MIC-R2_ It is the difference between the MIC value and the Pearson
+#'      correlation coefficient.
+#' When computing [mine()] between two numeric vectors `x` and `y`, 
+#' the output is a list of 5 numeric values. When `master` is provided, 
+#' [mine()] returns a list of 5 matrices having `ncol` equal to 
+#' _m_. In particular, if `master` is a single value, 
+#' then [mine()] returns a list of 5 matrices having 1 column, 
+#' whose rows correspond to the MINE measures between the _master_ 
+#' column versus all. Instead if `master` is a vector of _m_ indices,
+#' then [mine()] output is a list of 5 _m-by-m_ matrices, whose element 
+#' _i,j_ corresponds to the MINE statistics computed between the _i_ 
+#' and _j_ columns of `x`.
+#' @references 
+#' D. Reshef, Y. Reshef, H. Finucane, S. Grossman, G. McVean, P. Turnbaugh, 
+#' E. Lander, M. Mitzenmacher, P. Sabeti. (2011) 
+#' _Detecting novel associations in large datasets_.
+#' Science 334, 6062 <http://www.exploredata.net>
+#' (SOM: Supplementary Online Material at  <http://www.sciencemag.org/content/suppl/2011/12/14/334.6062.1518.DC1>)
+#' 
+#' D. Albanese, M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman, C. Furlanello. 
+#' _minerva and minepy: a C engine for the MINE suite and its R, Python and MATLAB wrappers._ 
+#' Bioinformatics (2013) 29(3): 407-408 first published online December 14, 2012 <doi:10.1093/bioinformatics/bts707>.
+#' 
+#' @author 
+#' Michele Filosi and Roberto Visintainer 
+#' @examples 
+#' A <- matrix(runif(50),nrow=5)
+#' mine(x=A, master=1)
+#' mine(x=A, master=c(1,3,5,7,8:10))
+#' 
+#' x <- runif(10); y <- 3*x+2; plot(x,y,type="l")
+#' mine(x,y)
+#' # MIC = 1 
+#' # MAS = 0
+#' # MEV = 1
+#' # MCN = 2
+#' # MIC-R2 = 0
+#' 
+#' set.seed(100); x <- runif(10); y <- 3*x+2+rnorm(10,mean=2,sd=5); plot(x,y)
+#' mine(x,y)
+#' # rounded values of MINE statistics
+#' # MIC = 0.61
+#' # MAS = 0
+#' # MEV = 0.61
+#' # MCN = 2
+#' # MIC-R2 = 0.13
+#' 
+#' t <-seq(-2*pi,2*pi,0.2); y1 <- sin(2*t); plot(t,y1,type="l")
+#' mine(t,y1)
+#' # rounded values of MINE statistics
+#' # MIC = 0.66 
+#' # MAS = 0.37
+#' # MEV = 0.66
+#' # MCN = 3.58
+#' # MIC-R2 = 0.62
+#' 
+#' y2 <- sin(4*t); plot(t,y2,type="l")
+#' mine(t,y2)
+#' # rounded values of MINE statistics
+#' # MIC = 0.32 
+#' # MAS = 0.18
+#' # MEV = 0.32
+#' # MCN = 3.58
+#' # MIC-R2 = 0.31
+#' 
+#' # Note that for small n it is better to increase alpha
+#' mine(t,y1,alpha=1)
+#' # rounded values of MINE statistics
+#' # MIC = 1 
+#' # MAS = 0.59
+#' # MEV = 1
+#' # MCN = 5.67
+#' # MIC-R2 = 0.96
+#' 
+#' mine(t,y2,alpha=1)
+#' # rounded values of MINE statistics
+#' # MIC = 1 
+#' # MAS = 0.59
+#' # MEV = 1
+#' # MCN = 5
+#' # MIC-R2 = 0.99
+#' 
+#' # Some examples from SOM
+#' x <- runif(n=1000, min=0, max=1)
+#' 
+#' # Linear relationship
+#' y1 <- x; plot(x,y1,type="l"); mine(x,y1)
+#' # MIC = 1 
+#' # MAS = 0
+#' # MEV = 1
+#' # MCN = 4
+#' # MIC-R2 = 0
+#' 
+#' # Parabolic relationship
+#' y2 <- 4*(x-0.5)^2; plot(sort(x),y2[order(x)],type="l"); mine(x,y2)
+#' # rounded values of MINE statistics
+#' # MIC = 1 
+#' # MAS = 0.68
+#' # MEV = 1
+#' # MCN = 5.5
+#' # MIC-R2 = 1
+#' 
+#' # Sinusoidal relationship (varying frequency)
+#' y3 <- sin(6*pi*x*(1+x)); plot(sort(x),y3[order(x)],type="l"); mine(x,y3)
+#' # rounded values of MINE statistics
+#' # MIC = 1 
+#' # MAS = 0.85
+#' # MEV = 1
+#' # MCN = 4.6
+#' # MIC-R2 = 0.96
+#' 
+#' # Circle relationship
+#' t <- seq(from=0,to=2*pi,length.out=1000)
+#' x4 <- cos(t); y4 <- sin(t); plot(x4, y4, type="l",asp=1)
+#' mine(x4,y4)
+#' # rounded values of MINE statistics
+#' # MIC = 0.68 
+#' # MAS = 0.01
+#' # MEV = 0.32
+#' # MCN = 5.98
+#' # MIC-R2 = 0.68
+#' 
+#' data(Spellman)
+#' res <- mine(Spellman,master=1,n.cores=1)
+#' 
+#' \dontrun{## example of multicore computation
+#' res <- mine(Spellman,master=1,n.cores=parallel::detectCores()-1)}
+#' @export
 mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, est="mic_approx",
                  na.rm=FALSE, use="all.obs", ...){
 
@@ -121,7 +357,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
                           x[var.idx,] <- 0.0
                         }
                       } else {
-                        x[var.idx,] <- x[,var.idx] <- 0.0
+                        x[var.idx,] <- 0.0
                       }
                     }
                     return(x)},
@@ -246,7 +482,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   if (length(na.rm)>1 || (!is.logical(na.rm) && !is.integer(na.rm)))
     na.rm <- FALSE
   
-  return(list(x, y, alpha, C, n.cores, eps, EST, var.idx, na.rm, na.method))
+  return(list(x=x, y=y, alpha=alpha, C=C, n.cores=n.cores, eps=eps, est=EST, var.idx=var.idx, na.rm=na.rm, use=na.method))
 }
 
 
@@ -372,3 +608,8 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   }
   return(list(MIC=Mat1,MAS=Mat2,MEV=Mat3,MCN=Mat4,MICR2=Mat5,GMIC=Mat6,TIC=Mat7))
 }
+
+
+# .onUnload <- function (libpath) {
+#   library.dynam.unload("minerva", libpath)
+# }

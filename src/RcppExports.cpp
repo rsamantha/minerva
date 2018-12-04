@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // mine_compute
-double mine_compute(NumericVector x, NumericVector y, double alpha, double C, String EST, int measure, double eps, double p, bool norm);
-RcppExport SEXP _minerva_mine_compute(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP ESTSEXP, SEXP measureSEXP, SEXP epsSEXP, SEXP pSEXP, SEXP normSEXP) {
+double mine_compute(NumericVector x, NumericVector y, double alpha, double C, String est, int measure, double eps, double p, bool norm);
+RcppExport SEXP _minerva_mine_compute(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP, SEXP measureSEXP, SEXP epsSEXP, SEXP pSEXP, SEXP normSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -15,12 +15,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type C(CSEXP);
-    Rcpp::traits::input_parameter< String >::type EST(ESTSEXP);
+    Rcpp::traits::input_parameter< String >::type est(estSEXP);
     Rcpp::traits::input_parameter< int >::type measure(measureSEXP);
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< bool >::type norm(normSEXP);
-    rcpp_result_gen = Rcpp::wrap(mine_compute(x, y, alpha, C, EST, measure, eps, p, norm));
+    rcpp_result_gen = Rcpp::wrap(mine_compute(x, y, alpha, C, est, measure, eps, p, norm));
     return rcpp_result_gen;
 END_RCPP
 }

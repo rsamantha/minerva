@@ -5,3 +5,6 @@
 *~
 *#*
 *.rds
+.Rproj.user
+minerva.Rproj
+.Rbuildignore

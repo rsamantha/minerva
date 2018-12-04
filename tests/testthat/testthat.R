@@ -71,3 +71,17 @@ test_that("Test exp:", {
     expect_equal(mm$MCN, 2, tolerance=1e-4)
 }
 )
+
+## test_that("Test bug 1:", {
+##     a <- mine(x = cbind(matrix(c(rnorm(6), 0, 0, 0), nrow = 3), rnorm(3)), master = 4)
+##     b <- mine(x = matrix(c(rnorm(6), 0, 0, 0), nrow = 3), y = rnorm(3))
+##     expect_equal(a$MIC, b$MIC, tolerance=1e-4)
+## }
+## )
+
+test_that("Test rcpp interface:", {
+    mydata <- lin.create(1000)
+    mm <- mine(mydata$X, mydata$Y)
+    mm2 <- mine_compute(mydata$X, mydata$Y)
+    expect_equal(mm$MIC, mm2, tolerance=1e-4)
+})

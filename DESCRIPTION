@@ -1,6 +1,6 @@
 Package: minerva
-Version: 1.4.7
-Date: 2017-07-05
+Version: 1.5
+Date: 2018-11-30
 Title: Maximal Information-Based Nonparametric Exploration for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         = "michele.filosi@unitn.it"), person("Roberto", "Visintainer", role =
@@ -11,7 +11,8 @@ Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         "ctb", email = "jurman@fbk.eu"), person("Cesare", "Furlanello",
         role = "ctb", email = "furlan@fbk.eu"))
 Depends: R (>= 2.14.0)
-Imports: parallel
+Imports: parallel, Rcpp, stats
+LinkingTo: Rcpp
 Suggests: testthat
 Description: Wrapper for 'minepy' implementation of Maximal
         Information-based Nonparametric Exploration statistics (MIC and
@@ -26,3 +27,5 @@ Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Davide
 Maintainer: Michele Filosi <michele.filosi@unitn.it>
 Repository: CRAN
 Date/Publication: 2013-01-07 17:53:58
+RoxygenNote: 6.1.1
+Encoding: UTF-8
