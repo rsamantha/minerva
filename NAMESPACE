@@ -2,7 +2,7 @@
 
 export(mine)
 export(mine_compute)
-export(mine_onemeasure)
+export(mine_stat)
 import(parallel)
 importFrom(Rcpp,sourceCpp)
 importFrom(stats,na.omit)

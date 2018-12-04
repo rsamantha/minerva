@@ -19,12 +19,16 @@
 
 #' Function to compute one measure at time
 #' @aliases MIC mic MAS mas MEV mev MCN mcn GMIC gmic TIC tic
-#' @param measure character indicating the measure to extract. Availiable values are: "mic", "mas", "mev", "mcn", "tic", "gmic".
+#' @param measure character indicating the measure to extract. Default value "mic". 
+#' Availiable values are: "mic", "mas", "mev", "mcn", "tic", "gmic".
 #' @param p probability for the generalized `mic`
 #' @param norm boolean if require normalization between 0 and 1 for the `tic` statistic
 #' @inheritParams mine
+#' @examples 
+#' x <- runif(10); y <- 3*x+2;
+#' mine_stat(x,y, measure="mic")
 #' @export
-mine_onemeasure <- function(x, y, alpha = 0.6, C = 15, est="mic_approx", measure="mic", eps=NULL, p=-1, norm=FALSE){
+mine_stat <- function(x, y, alpha = 0.6, C = 15, est="mic_approx", measure="mic", eps=NULL, p=-1, norm=FALSE){
   mymeasures <- c(mic=1L, mas=2L, mev=3L, mcn=4L, tic=5L, gmic=6L)
   
   mm <- mymeasures[pmatch(measure, names(mymeasures))]

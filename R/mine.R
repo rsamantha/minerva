@@ -339,6 +339,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
       newdata <- cbind(x,y)
       colnames(newdata)[ncol(newdata)] <- "Y"
       res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps=eps,est=est)
+      res <- lapply(res, function(x){dimnames(x) <- list(NULL, colnames(x)); return(x)})
     }
   }
   

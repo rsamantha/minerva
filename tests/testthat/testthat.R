@@ -82,6 +82,6 @@ test_that("Test exp:", {
 test_that("Test rcpp interface:", {
     mydata <- lin.create(1000)
     mm <- mine(mydata$X, mydata$Y)
-    mm2 <- mine_compute(mydata$X, mydata$Y)
-    expect_equal(mm$MIC, mm2, tolerance=1e-4)
+    mm2 <- mine_stat(mydata$X, mydata$Y)
+    expect_equal(mm$MIC, mm2, tolerance=1e-6)
 })
