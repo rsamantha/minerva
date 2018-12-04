@@ -25,6 +25,14 @@ x <- 0:200 / 200
 y <- sin(10 * pi * x) + x
 mine(x,y, n.cores=1)
 ```
+A new function has been added to extract a single statistic from the MINE suite.
+
+```
+x <- 0:200 / 200
+y <- sin(10 * pi * x) + x
+mine_stat(x, y)
+```
+
 
 ## Citing minepy/minerva 
 Davide Albanese, Michele Filosi, Roberto Visintainer, Samantha
