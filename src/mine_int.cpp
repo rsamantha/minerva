@@ -53,26 +53,25 @@ double mine_compute(NumericVector x, NumericVector y, double alpha=0.6, double C
   /* Compute MIC score */
   minescore = mine_compute_score(prob, param);
     
-  // switch(measure){
-  // case 1: res = mine_mic(minescore);
-  //   break;
-  // case 2: res = mine_mas(minescore); 
-  //   break;
-  // case 3: res = mine_mev(minescore);
-  //   break;
-  // case 4: 
-  //   if (!std::isnan(eps))
-  //     res = mine_mcn(minescore, eps);
-  //   else
-  //     res = mine_mcn_general(minescore);
-  //   break;
-  // case 5: res = mine_tic(minescore, norm);
-  //   break;
-  // case 6: res = mine_gmic(minescore, p);
-  //   break;
-  // default: res = NA_REAL;
-  // };
-  res = mine_mic(minescore);
+  switch(measure){
+  case 1: res = mine_mic(minescore);
+    break;
+  case 2: res = mine_mas(minescore);
+    break;
+  case 3: res = mine_mev(minescore);
+    break;
+  case 4:
+    if (!std::isnan(eps))
+      res = mine_mcn(minescore, eps);
+    else
+      res = mine_mcn_general(minescore);
+    break;
+  case 5: res = mine_tic(minescore, norm);
+    break;
+  case 6: res = mine_gmic(minescore, p);
+    break;
+  default: res = NA_REAL;
+  };
   
   /* Free score struct */
   mine_free_score(&minescore);
