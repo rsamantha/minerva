@@ -54,5 +54,5 @@ Function to compute one measure at time
 }
 \examples{
 x <- runif(10); y <- 3*x+2;
-mine_onemeasure(x,y, measure="mic")
+mine_stat(x,y, measure="mic")
 }
