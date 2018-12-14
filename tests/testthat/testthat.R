@@ -86,7 +86,3 @@ test_that("Test rcpp interface:", {
     expect_equal(mm$MIC, mm2, tolerance=1e-6)
 })
 
-
-test_that("Null variable to rcp:", {
-  
-})

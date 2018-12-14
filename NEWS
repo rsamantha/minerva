@@ -3,6 +3,8 @@ V. 1.5.0
 - Added support for extracting only one statistic without computing all of them
 - Update documentation
 - Added gmic and tic statistic
+- Added helper function to compute pairwise statistic of features in a matrix
+- Added helper function to compute pairwise statistic between features of two matrices
 
 V. 1.4.7
 ------
