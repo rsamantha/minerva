@@ -163,7 +163,7 @@ NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha=0.6, double C=15
 //' number of samples. If alpha is >=4 then alpha defines directly the B
 //' parameter. If alpha is higher than the number of samples (n) it will be
 //' limited to be n, so B = min(alpha, n).
-//' @param c float (> 0) determines how many more clumps there will be than columns in
+//' @param C float (> 0) determines how many more clumps there will be than columns in
 //' every partition. Default value is 15, meaning that when trying to
 //' draw x grid lines on the x-axis, the algorithm will start with at
 //' most 15*x clumps.

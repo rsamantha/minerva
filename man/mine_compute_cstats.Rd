@@ -20,15 +20,15 @@ number of samples. If alpha is >=4 then alpha defines directly the B
 parameter. If alpha is higher than the number of samples (n) it will be
 limited to be n, so B = min(alpha, n).}
 
+\item{C}{float (> 0) determines how many more clumps there will be than columns in
+every partition. Default value is 15, meaning that when trying to
+draw x grid lines on the x-axis, the algorithm will start with at
+most 15*x clumps.}
+
 \item{est}{string ("mic_approx", "mic_e") estimator. 
 With est="mic_approx" the original MINE statistics will
 be computed, with est="mic_e" the equicharacteristic matrix is
 is evaluated and MIC_e and TIC_e are returned.}
-
-\item{c}{float (> 0) determines how many more clumps there will be than columns in
-every partition. Default value is 15, meaning that when trying to
-draw x grid lines on the x-axis, the algorithm will start with at
-most 15*x clumps.}
 }
 \value{
 list of two elements:
