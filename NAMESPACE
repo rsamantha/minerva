@@ -2,6 +2,8 @@
 
 export(mine)
 export(mine_compute)
+export(mine_compute_cstats)
+export(mine_compute_pstats)
 export(mine_stat)
 import(parallel)
 importFrom(Rcpp,sourceCpp)

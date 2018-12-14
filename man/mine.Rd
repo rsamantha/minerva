@@ -264,7 +264,8 @@ Science 334, 6062\cr
 D. Albanese, M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman,
 C. Furlanello. 
 \emph{minerva and minepy: a C engine for the MINE suite and its R, Python and MATLAB wrappers}. 
-Bioinformatics (2013) 29(3): 407-408, \url{doi:10.1093/bioinformatics/bts707}.
+Bioinformatics (2013) 29(3): 407-408, \url{doi:10.1093/bioinformatics/bts707}.\cr
+
 \emph{minepy. Maximal Information-based Nonparametric Exploration in C and Python.}\cr 
 \url{http://minepy.sourceforge.net}
 }

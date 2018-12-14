@@ -24,14 +24,45 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mine_compute_pstats
+NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha, double C, String est);
+RcppExport SEXP _minerva_mine_compute_pstats(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type C(CSEXP);
+    Rcpp::traits::input_parameter< String >::type est(estSEXP);
+    rcpp_result_gen = Rcpp::wrap(mine_compute_pstats(x, alpha, C, est));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mine_compute_cstats
+NumericMatrix mine_compute_cstats(NumericMatrix x, NumericMatrix y, double alpha, double C, String est);
+RcppExport SEXP _minerva_mine_compute_cstats(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type C(CSEXP);
+    Rcpp::traits::input_parameter< String >::type est(estSEXP);
+    rcpp_result_gen = Rcpp::wrap(mine_compute_cstats(x, y, alpha, C, est));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP mineRall(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 RcppExport SEXP mineRonevar(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_minerva_mine_compute", (DL_FUNC) &_minerva_mine_compute, 9},
-    {"mineRall",              (DL_FUNC) &mineRall,              7},
-    {"mineRonevar",           (DL_FUNC) &mineRonevar,           6},
+    {"_minerva_mine_compute_pstats", (DL_FUNC) &_minerva_mine_compute_pstats, 4},
+    {"_minerva_mine_compute_cstats", (DL_FUNC) &_minerva_mine_compute_cstats, 5},
+    {"mineRall",                     (DL_FUNC) &mineRall,                     7},
+    {"mineRonevar",                  (DL_FUNC) &mineRonevar,                  6},
     {NULL, NULL, 0}
 };
 

@@ -85,3 +85,8 @@ test_that("Test rcpp interface:", {
     mm2 <- mine_stat(mydata$X, mydata$Y)
     expect_equal(mm$MIC, mm2, tolerance=1e-6)
 })
+
+
+test_that("Null variable to rcp:", {
+  
+})
