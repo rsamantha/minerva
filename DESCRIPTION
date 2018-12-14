@@ -3,7 +3,7 @@ Version: 1.5
 Date: 2018-11-30
 Title: Maximal Information-Based Nonparametric Exploration for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
-        = "michele.filosi@unitn.it"), person("Roberto", "Visintainer", role =
+        = "michele.filosi@gmail.com"), person("Roberto", "Visintainer", role =
         "aut", email = "roberto.visintainer@unitn.eu"), person("Davide",
         "Albanese", role = "aut", email = "davide.albanese@fmach.it"),
         person("Samantha", "Riccadonna", role = "ctb", email =
