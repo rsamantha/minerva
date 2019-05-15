@@ -79,9 +79,23 @@ test_that("Test exp:", {
 ## }
 ## )
 
+context("Rcpp Interface")
+
 test_that("Test rcpp interface:", {
     mydata <- lin.create(1000)
     mm <- mine(mydata$X, mydata$Y)
     mm2 <- mine_stat(mydata$X, mydata$Y)
     expect_equal(mm$MIC, mm2, tolerance=1e-6)
+})
+
+
+context("Check Mictools pipeline")
+
+test_that("Mictools pipeline:", {
+  mydata <- matrix(rep(1:10, 4), ncol=4, nrow=10) + matrix(rep((0:3), each=10), ncol=4, nrow=10)
+  nperm <- 100
+  rr <- mictools(mydata,nperm=nperm, seed=0)
+  lr <- length(rr)
+  expect_equal(lr, 3, tolerance=1e-4)
+  expect_equal(length(rr$tic), nperm)
 })
