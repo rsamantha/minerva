@@ -12,7 +12,7 @@ Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         role = "ctb", email = "furlan@fbk.eu"))
 Depends: R (>= 2.14.0)
 Imports: parallel, Rcpp, stats
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppArmadillo
 Suggests: testthat
 Description: Wrapper for 'minepy' implementation of Maximal
         Information-based Nonparametric Exploration statistics (MIC and

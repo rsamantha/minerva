@@ -4,6 +4,10 @@
 #' 
 NULL
 
+#' Function needed to convert from R Matrix to mine_matrix structure
+#' 
+NULL
+
 #' Function to compute one statistic at time
 #' 
 #' @param x Numeric Vector
@@ -18,5 +22,26 @@ NULL
 #' @export
 mine_compute <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx", measure = 1L, eps = 0.0, p = -1, norm = FALSE) {
     .Call('_minerva_mine_compute', PACKAGE = 'minerva', x, y, alpha, C, est, measure, eps, p, norm)
+}
+
+#' Function to compute mictools null distribution
+#' 
+#' @param x Numeric Vector
+#' @param y Numeric Vector
+#' @param B B parameter for the mine statistic
+#' @param C c parameter for the mine statistic
+#' @param nperm numper of permutation
+#' @param seed character which measure to return
+#' @export
+mictools_null <- function(x, B = 9, C = 5, nperm = 250000L, seed = 0L) {
+    .Call('_minerva_mictools_null', PACKAGE = 'minerva', x, B, C, nperm, seed)
+}
+
+#' Function to compute the pvalue for the mictools pipeline
+#' @inheritParams mictools_null
+#' @param est estimation parameter for the mine statistic
+#' @export
+mictools_pval <- function(x, alpha = 0.6, C = 15L, est = "mic_approx") {
+    .Call('_minerva_mictools_pval', PACKAGE = 'minerva', x, alpha, C, est)
 }
 
