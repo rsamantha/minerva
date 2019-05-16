@@ -96,6 +96,6 @@ test_that("Mictools pipeline:", {
   nperm <- 100
   rr <- mictools(mydata,nperm=nperm, seed=0)
   lr <- length(rr)
-  expect_equal(lr, 3, tolerance=1e-4)
+  expect_equal(lr, 6, tolerance=1e-4)
   expect_equal(length(rr$tic), nperm)
 })

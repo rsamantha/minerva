@@ -1,6 +1,6 @@
 Package: minerva
-Version: 1.5
-Date: 2018-11-30
+Version: 1.5.3
+Date: 2019-05-16
 Title: Maximal Information-Based Nonparametric Exploration for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         = "michele.filosi@unitn.it"), person("Roberto", "Visintainer", role =
@@ -11,7 +11,7 @@ Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         "ctb", email = "jurman@fbk.eu"), person("Cesare", "Furlanello",
         role = "ctb", email = "furlan@fbk.eu"))
 Depends: R (>= 2.14.0)
-Imports: parallel, Rcpp, stats
+Imports: parallel, Rcpp, stats, graphics, utils
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: testthat
 Description: Wrapper for 'minepy' implementation of Maximal
