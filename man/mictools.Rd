@@ -4,10 +4,24 @@
 \alias{mictools}
 \title{Function for mictools pipeline}
 \usage{
-mictools(x, alpha = 9, C = 5, seed = 0, nperm = 250000)
+mictools(x, alpha = 9, C = 5, seed = 0, nperm = 2e+05,
+  p.adjust.method = "BH")
 }
 \arguments{
+\item{x}{a numeric vector (of size \emph{n}), matrix or data frame (which is coerced to matrix).}
+
+\item{alpha}{an optional number of cells allowed in the \emph{X-by-Y} search-grid. Default value is 0.6 (see Details).}
+
+\item{C}{an optional number determining the starting point of the 
+\emph{X-by-Y} search-grid. When trying to partition the \emph{x}-axis into 
+\emph{X} columns, the algorithm will start with at most \code{C}\emph{X} 
+\emph{clumps}. Default value is 15 (see Details).}
+
+\item{seed}{set the seed for random number generation repreoducibility}
+
 \item{nperm}{integer, number of permutation to perform}
+
+\item{p.adjust.method}{method for pvalue adjustment, see [stats::p.adjust.methods] for further details.}
 }
 \description{
 Function for mictools pipeline

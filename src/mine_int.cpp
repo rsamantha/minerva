@@ -1,21 +1,10 @@
 #include <RcppArmadilloExtensions/sample.h>
 #include <Rcpp.h>
 #include "mine.h"
-// #include <stdlib.h>
-// #include <stdio.h>
-// #include <math.h>
-
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
 using namespace Rcpp;
-
-// enum mes_value {mic=1, mas=2, mev=3, mcn=4, tic=5, gmic=6};
-
-// static std::map<std::string, mes_value> measure_map;
-
-
-//' 
 
 //' Function to compute one statistic at time
 //' 
@@ -78,7 +67,9 @@ double mine_compute(NumericVector x, NumericVector y, double alpha=0.6, double C
   
   /* Free score struct */
   mine_free_score(&minescore);
-
+  Free(param);
+  Free(prob);
+  
   return(res);
 }
 
@@ -92,15 +83,13 @@ void set_seed(unsigned int seed)
 
 //' Function to compute mictools null distribution
 //' 
-//' @param x Numeric Vector
-//' @param y Numeric Vector
-//' @param B B parameter for the mine statistic
-//' @param C c parameter for the mine statistic
+//' @inheritParams mine_compute
 //' @param nperm numper of permutation
 //' @param seed character which measure to return
+//' 
 //' @export
 // [[Rcpp::export]]
-NumericVector mictools_null(NumericMatrix x, double B=9, double C=5, int nperm=250000, int seed=0)
+NumericVector mictools_null(NumericMatrix x, double alpha=9, double C=5, int nperm=250000, int seed=0)
 {
   
   int i;
@@ -116,7 +105,7 @@ NumericVector mictools_null(NumericMatrix x, double B=9, double C=5, int nperm=2
   
   // Set parameters for mine computation /
   param = (mine_parameter *) Calloc(1,mine_parameter);
-  param->alpha=B;
+  param->alpha=alpha;
   param->c=C;
   // est == "mic_e"
   param->est=1;
@@ -145,17 +134,20 @@ NumericVector mictools_null(NumericMatrix x, double B=9, double C=5, int nperm=2
     /* Compute score */
     minescore = mine_compute_score(prob, param);
     restic[i] = mine_tic(minescore, true);
+    
+    /* Free score struct */
+    mine_free_score(&minescore);
   }
-
-  /* Free score struct */
-  mine_free_score(&minescore);
+  
+  /* Free memory */
+  Free(param);
+  Free(prob);
   
   return restic;
 }
 
 
-//' Function needed to convert from R Matrix to mine_matrix structure
-//' 
+/* Function needed to convert from R Matrix to mine_matrix structure */
 mine_matrix *rMattomine(NumericMatrix x)
 {
   mine_matrix *X;
@@ -170,11 +162,12 @@ mine_matrix *rMattomine(NumericMatrix x)
 
 
 //' Function to compute the pvalue for the mictools pipeline
+//' 
 //' @inheritParams mictools_null
 //' @param est estimation parameter for the mine statistic
 //' @export
 // [[Rcpp::export]]
-NumericMatrix mictools_pval(NumericMatrix x, double alpha=0.6, int C=15, String est="mic_approx")
+NumericMatrix mictools_pstats(NumericMatrix x, double alpha=0.6, int C=15, String est="mic_approx")
 {
   int i;
   mine_matrix *X;
@@ -199,8 +192,8 @@ NumericMatrix mictools_pval(NumericMatrix x, double alpha=0.6, int C=15, String 
   NumericMatrix stats(pstat->n, 2);
   for (i=0; i<pstat->n; i++)
   {
-    stats(i,0) = pstat->tic[i];
-    stats(i,1) = pstat->mic[i];
+    stats(i,0) = pstat->mic[i];
+    stats(i,1) = pstat->tic[i];
   }
   /* Free */
   Free(param);
@@ -210,3 +203,18 @@ NumericMatrix mictools_pval(NumericMatrix x, double alpha=0.6, int C=15, String 
   
   return(stats);
 }
+
+
+/*
+//' Function to compute mic strength based on pvalue
+//' 
+//' @inheritParams mictools_null
+//' @export
+// [[Rcpp::export]]
+ */
+/* NumericMatrix mictools_strength(NumericMatrix x, double alpha=0.6, int C=5, String est = "mic_approx")
+{
+  NumericVector binpoints ={1, 25, 50, 250, 500, 1000, 2500, 5000, 10000, 40000};
+  NumericVector alphas = {0.85, 0.80, 0.75, 0.70, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4};
+  
+} */

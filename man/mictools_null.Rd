@@ -4,20 +4,18 @@
 \alias{mictools_null}
 \title{Function to compute mictools null distribution}
 \usage{
-mictools_null(x, B = 9, C = 5, nperm = 250000L, seed = 0L)
+mictools_null(x, alpha = 9, C = 5, nperm = 250000L, seed = 0L)
 }
 \arguments{
 \item{x}{Numeric Vector}
 
-\item{B}{B parameter for the mine statistic}
+\item{alpha}{alpha parameter for the mine statistic}
 
 \item{C}{c parameter for the mine statistic}
 
 \item{nperm}{numper of permutation}
 
 \item{seed}{character which measure to return}
-
-\item{y}{Numeric Vector}
 }
 \description{
 Function to compute mictools null distribution

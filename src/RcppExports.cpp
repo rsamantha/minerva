@@ -26,23 +26,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // mictools_null
-NumericVector mictools_null(NumericMatrix x, double B, double C, int nperm, int seed);
-RcppExport SEXP _minerva_mictools_null(SEXP xSEXP, SEXP BSEXP, SEXP CSEXP, SEXP npermSEXP, SEXP seedSEXP) {
+NumericVector mictools_null(NumericMatrix x, double alpha, double C, int nperm, int seed);
+RcppExport SEXP _minerva_mictools_null(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP npermSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type C(CSEXP);
     Rcpp::traits::input_parameter< int >::type nperm(npermSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(mictools_null(x, B, C, nperm, seed));
+    rcpp_result_gen = Rcpp::wrap(mictools_null(x, alpha, C, nperm, seed));
     return rcpp_result_gen;
 END_RCPP
 }
-// mictools_pval
-NumericMatrix mictools_pval(NumericMatrix x, double alpha, int C, String est);
-RcppExport SEXP _minerva_mictools_pval(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
+// mictools_pstats
+NumericMatrix mictools_pstats(NumericMatrix x, double alpha, int C, String est);
+RcppExport SEXP _minerva_mictools_pstats(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,7 +50,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< int >::type C(CSEXP);
     Rcpp::traits::input_parameter< String >::type est(estSEXP);
-    rcpp_result_gen = Rcpp::wrap(mictools_pval(x, alpha, C, est));
+    rcpp_result_gen = Rcpp::wrap(mictools_pstats(x, alpha, C, est));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -61,7 +61,7 @@ RcppExport SEXP mineRonevar(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 static const R_CallMethodDef CallEntries[] = {
     {"_minerva_mine_compute", (DL_FUNC) &_minerva_mine_compute, 9},
     {"_minerva_mictools_null", (DL_FUNC) &_minerva_mictools_null, 5},
-    {"_minerva_mictools_pval", (DL_FUNC) &_minerva_mictools_pval, 4},
+    {"_minerva_mictools_pstats", (DL_FUNC) &_minerva_mictools_pstats, 4},
     {"mineRall",    (DL_FUNC) &mineRall,    7},
     {"mineRonevar", (DL_FUNC) &mineRonevar, 6},
     {NULL, NULL, 0}
