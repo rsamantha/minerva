@@ -93,7 +93,7 @@ mic_strength <- function(x, pval, alpha=NULL, C=5, pthr=0.05, pval.col=1:3)
   }, x.sub=x, alpha=alpha, C=C, vartouse=pval[, pval.col[2:3]])
   
   ## Add variable index of the MIC computed
-  res.df <- data.frame(TicePvalpval=pval[pix, pval.col[1]], MIC=res, 
+  res.df <- data.frame(TicePval=pval[pix, pval.col[1]], MIC=res, 
                        I1=pval[pix, pval.col[2]], I2=pval[pix, pval.col[3]], 
                        stringsAsFactors = FALSE)
   
