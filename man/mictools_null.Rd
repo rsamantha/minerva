@@ -2,21 +2,41 @@
 % Please edit documentation in R/RcppExports.R
 \name{mictools_null}
 \alias{mictools_null}
-\title{Function to compute mictools null distribution}
+\alias{mictools_pstats}
+\title{This set of functions are helper function to compute null distribution of the \code{tic_e} and 
+\code{tic_e} observed distribution from a matrix}
 \usage{
-mictools_null(x, alpha = 9, C = 5, nperm = 250000L, seed = 0L)
+mictools_null(x, alpha = 9, C = 5, nperm = 200000L, seed = 0L)
+
+mictools_pstats(x, alpha = 0.6, C = 15L, est = "mic_approx")
 }
 \arguments{
-\item{x}{Numeric Vector}
+\item{x}{matrix N x M with M variables and N samples}
 
-\item{alpha}{alpha parameter for the mine statistic}
+\item{alpha}{numeric value representing parameter for the mine statistic see \code{\link[minerva]{mine}}}
 
-\item{C}{c parameter for the mine statistic}
+\item{C}{c parameter for the mine statistic see \code{\link[minerva]{mine}}}
 
 \item{nperm}{numper of permutation}
 
-\item{seed}{character which measure to return}
+\item{seed}{integer to set the starting seed for random number generation (for reproducibility).}
+
+\item{est}{estimation parameter for the mine statistic}
+}
+\value{
+It returns a vector of \code{nperm} \code{tic_e} values.
 }
 \description{
-Function to compute mictools null distribution
+This set of functions are helper function to compute null distribution of the \code{tic_e} and 
+\code{tic_e} observed distribution from a matrix
+}
+\section{Functions}{
+\itemize{
+\item \code{mictools_null}: compute the \code{tic_e} null distribution
+
+\item \code{mictools_pstats}: Computing the tic and mic statistics
+}}
+
+\seealso{
+\code{\link[minerva]{mictools}}
 }

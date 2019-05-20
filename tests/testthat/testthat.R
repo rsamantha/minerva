@@ -88,6 +88,12 @@ test_that("Test rcpp interface:", {
     expect_equal(mm$MIC, mm2, tolerance=1e-6)
 })
 
+test_that("Test rcpp interface matrix:", {
+  mydata <- lin.create(1000)
+  mm <- mine(mydata$X, mydata$Y)
+  mm2 <- mine_allvar_onemeasure(as.matrix(mydata), measure="mic")
+  expect_equal(mm$MIC, mm2[1,1], tolerance=1e-6)
+})
 
 context("Check Mictools pipeline")
 
@@ -96,6 +102,28 @@ test_that("Mictools pipeline:", {
   nperm <- 100
   rr <- mictools(mydata,nperm=nperm, seed=0)
   lr <- length(rr)
-  expect_equal(lr, 6, tolerance=1e-4)
+  expect_equal(lr, 5, tolerance=1e-4)
   expect_equal(length(rr$tic), nperm)
+})
+
+test_that("mic_strength pval.col parameters",{
+  mydata <- matrix(rep(1:10, 4), ncol=4, nrow=10) + matrix(rep((0:3), each=10), ncol=4, nrow=10)
+  rr <- mictools(mydata, nperm=100, seed=10)
+  expect_error(mic_strength(mydata, pval=rr$pval, pval.col=6))
+})
+
+test_that("mic_strength high correlation == 1",{
+  mydata <- matrix(rep(1:10, 4), ncol=4, nrow=10) + matrix(rep((0:3), each=10), ncol=4, nrow=10)
+  rr <- mictools(mydata, nperm=100, seed=10)
+  ms <- mic_strength(mydata, pval=rr$pval, pval.col=c(6, 2, 3))
+  expect_equal(all(ms$MIC == 1), TRUE)
+})
+
+context("Check parameters in Rcpp functions")
+
+test_that("Alpha check through Rcpp interface",{
+  mydata <- lin.create(1000)
+  expect_error(mine_compute(mydata[, 1], mydata[, 2], alpha=-5), NULL)
+  expect_error(mine_compute(mydata[, 1], mydata[, 2], C=-3), NULL)
+  expect_error(mine_compute(mydata[, 1], mydata[, 2], est='ciccio'), NULL)
 })

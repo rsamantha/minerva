@@ -6,9 +6,9 @@
 
 using namespace Rcpp;
 
-// mine_compute
-double mine_compute(NumericVector x, NumericVector y, double alpha, double C, String est, int measure, double eps, double p, bool norm);
-RcppExport SEXP _minerva_mine_compute(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP, SEXP measureSEXP, SEXP epsSEXP, SEXP pSEXP, SEXP normSEXP) {
+// mine_stat
+double mine_stat(NumericVector x, NumericVector y, double alpha, double C, String est, String measure, double eps, double p, bool norm);
+RcppExport SEXP _minerva_mine_stat(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP, SEXP measureSEXP, SEXP epsSEXP, SEXP pSEXP, SEXP normSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -17,11 +17,29 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type C(CSEXP);
     Rcpp::traits::input_parameter< String >::type est(estSEXP);
-    Rcpp::traits::input_parameter< int >::type measure(measureSEXP);
+    Rcpp::traits::input_parameter< String >::type measure(measureSEXP);
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< bool >::type norm(normSEXP);
-    rcpp_result_gen = Rcpp::wrap(mine_compute(x, y, alpha, C, est, measure, eps, p, norm));
+    rcpp_result_gen = Rcpp::wrap(mine_stat(x, y, alpha, C, est, measure, eps, p, norm));
+    return rcpp_result_gen;
+END_RCPP
+}
+// mine_allvar_onemeasure
+NumericMatrix mine_allvar_onemeasure(NumericMatrix x, double alpha, double C, String est, String measure, double eps, double p, bool norm);
+RcppExport SEXP _minerva_mine_allvar_onemeasure(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP, SEXP measureSEXP, SEXP epsSEXP, SEXP pSEXP, SEXP normSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type C(CSEXP);
+    Rcpp::traits::input_parameter< String >::type est(estSEXP);
+    Rcpp::traits::input_parameter< String >::type measure(measureSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< bool >::type norm(normSEXP);
+    rcpp_result_gen = Rcpp::wrap(mine_allvar_onemeasure(x, alpha, C, est, measure, eps, p, norm));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -59,7 +77,8 @@ RcppExport SEXP mineRall(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 RcppExport SEXP mineRonevar(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_minerva_mine_compute", (DL_FUNC) &_minerva_mine_compute, 9},
+    {"_minerva_mine_stat", (DL_FUNC) &_minerva_mine_stat, 9},
+    {"_minerva_mine_allvar_onemeasure", (DL_FUNC) &_minerva_mine_allvar_onemeasure, 8},
     {"_minerva_mictools_null", (DL_FUNC) &_minerva_mictools_null, 5},
     {"_minerva_mictools_pstats", (DL_FUNC) &_minerva_mictools_pstats, 4},
     {"mineRall",    (DL_FUNC) &mineRall,    7},
