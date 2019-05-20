@@ -97,8 +97,6 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   if (err)
     stop(err);
   
-
-  
   /* Check vector dimension compatibility */
   if (x.length() != y.length())
     stop("Not conformable arrays!");

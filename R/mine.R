@@ -58,6 +58,8 @@
 #' \code{cor}-based functions. See \code{cor} for further details.
 #' @param use Default value is "all.obs". This variable is passed directly to the 
 #' \code{cor}-based functions. See \code{cor} for further details.
+#' @param normalization logical whether to use normalization when computing \code{tic} measure. Ignored for other measures.
+#' Default to FALSE.
 #' @param \dots currently ignored
 #' @details \code{mine} is an R wrapper for the C engine \emph{cmine} 
 #' (\url{http://minepy.readthedocs.io/en/latest/}), 
@@ -262,10 +264,10 @@
 #' res <- mine(Spellman,master=1,n.cores=parallel::detectCores()-1)}
 #' @export
 mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-5, eps=NULL, est="mic_approx",
-                 na.rm=FALSE, use="all.obs", ...){
+                 na.rm=FALSE, use="all.obs", normalization=FALSE, ...){
 
   ## Control on input arguments
-  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, est, na.rm, use)
+  checked <- check.inputs(x,y,alpha,C,n.cores,var.thr,eps, est, na.rm, use, normalization)
   x <- checked[[1]]
   y <- checked[[2]]
   alpha <- checked[[3]]
@@ -276,6 +278,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
   var.idx <- checked[[8]]
   na.rm <- checked[[9]]
   use <- checked[[10]]
+  normalization <- checked[[11]]
   
   ## only one matrix given
   if (is.null(y)){
@@ -300,20 +303,20 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     if (is.null(master)){
       if (n.cores>1){
         ## Launch parallel
-        res <- .allvsallparall(x,alpha,C,n.cores,eps,est)
+        res <- .allvsallparall(x,alpha,C,n.cores,eps,est, normalization)
         ## return(.allvsallparall(x,alpha,C,n.cores,eps))
       } else{
-        res <- .allvsall(x,alpha,C,eps,est)
+        res <- .allvsall(x,alpha,C,eps,est, normalization)
         ## return(.allvsall(x,alpha,C,eps))
       }
     } else {
       if (length(master)==1){
         if (n.cores>1){
-          res <- .onevsallparall(x,master,alpha,C,n.cores,eps,est)
+          res <- .onevsallparall(x,master,alpha,C,n.cores,eps,est, normalization)
           ## return(.onevsallparall(x,master,alpha,C,n.cores,eps))
         }
         else{
-          res <- .onevsall(x,master,alpha,C,exclude=FALSE,eps=eps, est=est)
+          res <- .onevsall(x,master,alpha,C,exclude=FALSE,eps=eps, est=est, normalization=normalization)
           ## return(.onevsall(x,master,alpha,C,exclude=FALSE,eps))
         }
       }
@@ -321,10 +324,10 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
         newdata <- x[,master]
         if (n.cores>1){
           ## Launch parallel
-          res <- .allvsallparall(newdata,alpha,C,n.cores,eps,est)
+          res <- .allvsallparall(newdata,alpha,C,n.cores,eps,est, normalization)
           ## return(.allvsallparall(newdata,alpha,C,n.cores,eps))
         } else {
-          res <- .allvsall(newdata,alpha,C,eps,est)
+          res <- .allvsall(newdata,alpha,C,eps,est, normalization)
           ## return(.allvsall(newdata,alpha,C,eps))
         }
       }
@@ -342,13 +345,13 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
     
     ## two variables given
     if (ncol(x) == 1 & ncol(y) == 1){
-      res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps, est=est)
+      res <- .Call("mineRonevar",as.double(x),as.double(y),alpha=alpha,C=C,eps=eps, est=est, normalization=normalization)
       names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
       res <- as.list(res)
     } else {
       newdata <- cbind(x,y)
       colnames(newdata)[ncol(newdata)] <- "Y"
-      res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps=eps,est=est)
+      res <- .onevsall(newdata,ncol(newdata),alpha,C,exclude=TRUE,eps=eps,est=est, normalization=normalization)
       res <- lapply(res, function(x){dimnames(x) <- list(NULL, colnames(x)); return(x)})
     }
   }
@@ -386,7 +389,7 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
 ## x should be a matrix or a vector
 ##   if x is a vector y should be given
 ## y should be a one dimensional vector
-check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
+check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use, normalization) {
 
   ## MINE parameters check!
   if (!is.numeric(alpha)){
@@ -497,14 +500,19 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   if (length(na.rm)>1 || (!is.logical(na.rm) && !is.integer(na.rm)))
     na.rm <- FALSE
   
-  return(list(x=x, y=y, alpha=alpha, C=C, n.cores=n.cores, eps=eps, est=EST, var.idx=var.idx, na.rm=na.rm, use=na.method))
+  ## Check normalization parameter for tic
+  if ((length(normalization) > 1) || (!is.logical(normalization) && !is.integer(normalization)) )
+    normalization <- FALSE
+  normalization <- as.integer(normalization)
+  
+  return(list(x=x, y=y, alpha=alpha, C=C, n.cores=n.cores, eps=eps, est=EST, var.idx=var.idx, na.rm=na.rm, use=na.method, normalization=normalization))
 }
 
 
 ## Calling all features vs all features using C implementation
 ## For the source see src/mine_interface.c
-.allvsall <- function(x, alpha, C,eps, est){
-  tmp <- .Call("mineRall",x,nrow(x),ncol(x),alpha,C, eps, est)
+.allvsall <- function(x, alpha, C,eps, est, normalization){
+  tmp <- .Call("mineRall",x,nrow(x),ncol(x),alpha,C, eps, est, normalization)
   tmp <- lapply(tmp,function(y,n){colnames(y) <- rownames(y) <- n
                                   return(y)}, n <- colnames(x))
   return(tmp)
@@ -513,7 +521,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
 ## Calling feature x[,idx] vs all other features
 ## Using C implementation feature vs feature
 ## For the source see src/mine_interface.c
-.onevsall <- function(x,idx,alpha,C,eps,exclude,est,diagonal=FALSE){
+.onevsall <- function(x,idx,alpha,C,eps,exclude,est,normalization, diagonal=FALSE){
   if (exclude)
     f <- dim(x)[2]-1
   else
@@ -533,7 +541,7 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
   
   for (i in start:f){
     res <- .Call("mineRonevar",as.double(x[,idx]),as.double(x[,i]),
-                 alpha=alpha,C=C,eps=eps, est=est)
+                 alpha=alpha,C=C,eps=eps, est=est, normalization=normalization)
     names(res) <- c("MIC","MAS","MEV","MCN","MIC-R2", "GMIC", "TIC")
     Mat1[i,1] <- res["MIC"]
     Mat2[i,1] <- res["MAS"]
@@ -549,13 +557,13 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
 ## Parallel implementation of one vs all function
 ## NB using 'parallel' package from CRAN for R >= 2.14
 ## If older version of R install multicore package
-.onevsallparall <- function(x,master,alpha,C,n.cores,eps, est){
+.onevsallparall <- function(x,master,alpha,C,n.cores,eps, est, normalization){
   f <- dim(x)[2]
   cl <- makeCluster(n.cores)
-  res <- parLapply(cl,1:f,function(i,master,alpha,C,data,eps,est){
+  res <- parLapply(cl,1:f,function(i,master,alpha,C,data,eps,est, normalization){
     return(.Call("mineRonevar",as.double(data[,master]),
-                 as.double(data[,i]),alpha=alpha,C=C,eps=eps,est=est))},
-                   master=master,alpha=alpha,C=C,eps=eps,est=est,data=x)
+                 as.double(data[,i]),alpha=alpha,C=C,eps=eps,est=est, normalization))},
+                   master=master,alpha=alpha,C=C,eps=eps,est=est,normalization=normalization, data=x)
   stopCluster(cl)
   
   Mat1 <- matrix(0,nrow=f,ncol=1,dimnames=list(colnames(x)[1:f],colnames(x)[master]))
@@ -581,12 +589,12 @@ check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
 ## Parallel implementation of all vs all function
 ## NB using 'parallel' package from CRAN for R >= 2.14
 ## If older version of R install multicore package
-.allvsallparall <- function(x, alpha, C, n.cores,eps,est){
+.allvsallparall <- function(x, alpha, C, n.cores,eps,est, normalization){
   f <- dim(x)[2]
   cl <- makeCluster(n.cores)
-  res <- parLapply(cl,1:f,function(y,data,alpha,C,eps,est){
-    return(.onevsall(x=data,idx=y,alpha=alpha,C=C,eps=eps,est=est,exclude=FALSE,diagonal=TRUE))},
-                   data=x,alpha=alpha,C=C,eps=eps,est=est)
+  res <- parLapply(cl,1:f,function(y,data,alpha,C,eps,est, normalization){
+    return(.onevsall(x=data,idx=y,alpha=alpha,C=C,eps=eps,est=est,normalization=normalization, exclude=FALSE,diagonal=TRUE))},
+                   data=x,alpha=alpha,C=C,eps=eps,est=est, normalization=normalization)
   
   stopCluster(cl)
   Mat1 <- matrix(0,ncol=f,nrow=f,dimnames=list(colnames(x),colnames(x)))

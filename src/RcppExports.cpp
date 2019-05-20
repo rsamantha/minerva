@@ -70,16 +70,16 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP mineRall(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-RcppExport SEXP mineRonevar(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP mineRall(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP mineRonevar(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_minerva_mine_stat", (DL_FUNC) &_minerva_mine_stat, 9},
     {"_minerva_pstats", (DL_FUNC) &_minerva_pstats, 4},
     {"_minerva_cstats", (DL_FUNC) &_minerva_cstats, 5},
     {"_minerva_mictools_null", (DL_FUNC) &_minerva_mictools_null, 5},
-    {"mineRall",    (DL_FUNC) &mineRall,    7},
-    {"mineRonevar", (DL_FUNC) &mineRonevar, 6},
+    {"mineRall",    (DL_FUNC) &mineRall,    8},
+    {"mineRonevar", (DL_FUNC) &mineRonevar, 7},
     {NULL, NULL, 0}
 };
 
