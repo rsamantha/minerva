@@ -51,7 +51,7 @@ char *check_eps(double eps)
 //' @param measure integer indicating which measure to return
 //' @param eps eps value for MCN statistic should be in (0,1). If NA is passed then the normal MCN statistic is returned.
 //' @param p probability for the generalized mic
-//' @param norm boolean if require normalization between 0 and 1 for the tic statistic
+//' @param norm boolean if require normalization between 0 and 1 for the \code{tic} statistic
 //' @details This is a wrapper function to compute the mine statistic between two variables.
 //' for more details on the available measure and the meaning of the other parameters see also the 
 //' documentation for the \code{\link[minerva]{mine}} function.
