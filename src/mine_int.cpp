@@ -33,11 +33,23 @@ int switch_est(String est)
 char *check_eps(double eps)
 {
   if ((eps < 0.0) | (eps > 1.0))
-    return "'eps' must be > 0.0 and < 1.0";
+    return (char *)"'eps' must be > 0.0 and < 1.0";
   
   return NULL;
 }
 
+/* Helper funtion to convert from R Matrix to mine_matrix structure */
+mine_matrix *rMattomine(NumericMatrix x)
+{
+  mine_matrix *X;
+  
+  X = (mine_matrix *) Calloc(1, mine_matrix);
+  X->data=REAL(x);
+  X->n=x.ncol();
+  X->m=x.nrow();
+  
+  return(X);
+}
 
 //' This is an helper function to compute one \code{mine} statistic.
 //' It take two vectors of the same dimension as an input.
@@ -85,10 +97,7 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   if (err)
     stop(err);
   
-  /* Check eps */
-  err = check_eps(eps);
-  if (err)
-    stop(err);
+
   
   /* Check vector dimension compatibility */
   if (x.length() != y.length())
@@ -103,6 +112,9 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   /* Compute MIC score */
   minescore = mine_compute_score(prob, param);
   
+  /* Check eps for MCN */
+  err = check_eps(eps);
+
   /* Switch between measure to return */
   switch(m){
   case 1: res = mine_mic(minescore);
@@ -112,10 +124,14 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   case 3: res = mine_mev(minescore);
     break;
   case 4:
-    if (!std::isnan(eps))
-      res = mine_mcn(minescore, eps);
-    else
-      res = mine_mcn_general(minescore);
+    if (err){
+      stop(err);
+    } else {
+      if (!std::isnan(eps))
+        res = mine_mcn(minescore, eps);
+      else
+        res = mine_mcn_general(minescore);
+    }
     break;
   case 5: res = mine_tic(minescore, norm);
     break;
@@ -142,18 +158,22 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
 //' (condensed matrix). If m is the number of variables, then for i < j < m, the
 //' statistic between (col) i and j is stored in k = m*i - i*(i+1)/2 - i - 1 + j.
 //' The length of the vectors is n = m*(m-1)/2.
-//' @param x Numeric matrix of m-by-n of n variables and m samples
-//' @param alpha alpha parameter for the mine statistic
-//' @param C c parameter for the mine statistic
-//' @param est estimation parameter for the mine statistic
-//' 
+//' @inheritParams cstats
 //' @return
-//' Matrix (n x (n-1)/2) by 4. The first and second column indicate the indexes relative of the columns 
-//' in the inut matrix the statistic is computed for.
-//' Column 3 contains the MIC statistic, while column 4 contains the normalized TIC statistic.
+//' A matrix of (n x (n-1)/2) rows and 4 columns. The first and second column are
+//' the indexes relative to the columns in the input matrix \code{x} for which the statistic is computed for.
+//' Column 3 contains the MIC statistic, while column 4 contains the normalized TIC statistic. 
+//' @examples
+//' ## Create a matrix of random numbers
+//' ## 10 variables x 100 samples
+//' x <- matrix(rnorm(1000), ncol=10)
+//' res <- pstats(x)
+//' 
+//' head(res)
+//' 
 //' @export
 // [[Rcpp::export]]
-NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha=0.6, double C=15, String est="mic_approx")
+NumericMatrix pstats(NumericMatrix x, double alpha=0.6, double C=15, String est="mic_approx")
 {
   mine_parameter param;
   mine_matrix mmat;
@@ -162,17 +182,21 @@ NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha=0.6, double C=15
   int k=0;
   int nr=x.nrow();
   int nc=x.ncol();
+  int lest;
+  char *err;
 
-  int EST=0;
-  if (est == "mic_e")
-  {
-    EST = 1;
-  }
+  /* Set EST parameter */
+  lest = switch_est(est);
   
   /* Allocate parameters for computation */
   param.alpha=alpha;
   param.c=C; 
-  param.est=EST;
+  param.est=lest;
+  
+  /* Check parameteres for MINE statistic */
+  err = mine_check_parameter(&param);
+  if (err)
+    stop(err);
   
   /*Prepare data structure */
   mmat.data = x.begin();
@@ -212,20 +236,18 @@ NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha=0.6, double C=15
   return(mres);
 }
 
-
-//'Compute statistics (MIC and normalized TIC) between each pair of the two
+//' Compute statistics (MIC and normalized TIC) between each pair of the two
 //' collections of variables (convenience function).
 //' If n and m are the number of variables in X and Y respectively, then the
-//'   statistic between the (row) i (for X) and j (for Y) is stored in mic[i, j]
-//' and tic[i, j].
-//'  
+//'   statistic between the (row) i (for X) and j (for Y) is stored in \code{mic[i, j]}
+//' and \code{tic[i, j]}.
 //' @param x Numeric Matrix of m-by-n with n variables and m samples.
 //' @param y Numeric Matrix of m-by-p with p variables and m samples.
-//' @param alpha float (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
+//' @param alpha number (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
 //' number of samples. If alpha is >=4 then alpha defines directly the B
 //' parameter. If alpha is higher than the number of samples (n) it will be
 //' limited to be n, so B = min(alpha, n).
-//' @param C float (> 0) determines how many more clumps there will be than columns in
+//' @param C number (> 0) determines how many more clumps there will be than columns in
 //' every partition. Default value is 15, meaning that when trying to
 //' draw x grid lines on the x-axis, the algorithm will start with at
 //' most 15*x clumps.
@@ -237,26 +259,35 @@ NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha=0.6, double C=15
 //' @return list of two elements:
 //' MIC: the MIC statistic matrix (n x p).
 //' TIC: the normalized TIC statistic matrix (n x p).
+//' @examples
+//' x = matrix(rnorm(2560), ncol=8, nrow=320)
+//' y = matrix(rnorm(1280), ncol=4, nrow=320)
+//' 
+//' mictic = cstats(x, y, alpha=9, C=5, est="mic_e")
 //' @export
 // [[Rcpp::export]]
-NumericMatrix mine_compute_cstats(NumericMatrix x, NumericMatrix y, double alpha=0.6, double C=15, String est="mic_approx")
+NumericMatrix cstats(NumericMatrix x, NumericMatrix y, double alpha=0.6, double C=15, String est="mic_approx")
 {
   mine_parameter param;
   mine_matrix x_, y_;
   mine_cstats *cres;
+  char *err;
   int i, j, l;
+  int lest;
+    
+  /* Set EST parameter */
+  lest = switch_est(est);
 
-  int EST=0;
-  if (est == "mic_e")
-  {
-    EST = 1;
-  }
-  
   /* Allocate parameters for computation */
   param.alpha=alpha;
   param.c=C;
-  param.est=EST;
+  param.est=lest;
   
+  /* Check parameteres for MINE statistic */
+  err = mine_check_parameter(&param);
+  if (err)
+    stop(err);
+ 
   /*Prepare data structure */
   x_.data = x.begin();
   x_.m = x.nrow();
@@ -266,15 +297,11 @@ NumericMatrix mine_compute_cstats(NumericMatrix x, NumericMatrix y, double alpha
   y_.m = y.nrow();
   y_.n = y.ncol();
   
-
   /* Compute pairwise statistic */
   cres = mine_compute_cstats(&x_, &y_, &param);
   
   if (!cres)
-  {
-    free(cres);
-    return(NA_REAL);
-  }
+    stop("Not conformable arrays");
   
   /* Matrix for results */
   NumericMatrix rres(x_.n * y_.n, 4);
@@ -310,17 +337,19 @@ NumericMatrix mine_compute_cstats(NumericMatrix x, NumericMatrix y, double alpha
   return(rres);
 }
 
-//' @export
-// [[Rcpp::export]]
+
+/* 
+ Do we need this function? 
+ guess not...you can use mine
+*/
 NumericMatrix mine_allvar_onemeasure(NumericMatrix x, double alpha=0.6, double C=15, String est="mic_approx", String measure="mic", double eps=0.0, double p=-1, bool norm=false)
 {
 
-  int n, v;
+  int v;
   int i, j, it;
   double res;
 
   /* Set matrix dimension */
-  n = x.nrow();
   v = x.ncol();
   
   NumericMatrix ret((v * (v-1))/2, 3);
@@ -345,8 +374,6 @@ NumericMatrix mine_allvar_onemeasure(NumericMatrix x, double alpha=0.6, double C
   
   return(ret);
 }
-  
-  
 
 
 /* This function is needed to set the random seed */
@@ -434,65 +461,5 @@ NumericVector mictools_null(NumericMatrix x, double alpha=9, double C=5, int npe
 }
 
 
-/* Helper funtion to convert from R Matrix to mine_matrix structure */
-mine_matrix *rMattomine(NumericMatrix x)
-{
-  mine_matrix *X;
-  
-  X = (mine_matrix *) Calloc(1, mine_matrix);
-  X->data=REAL(x);
-  X->n=x.ncol();
-  X->m=x.nrow();
-  
-  return(X);
-}
 
 
-//' @inheritParams mictools_null
-//' @param est estimation parameter for the mine statistic
-//' @describeIn mictools_null Computing the tic and mic statistics
-//' @export
-// [[Rcpp::export]]
-NumericMatrix mictools_pstats(NumericMatrix x, double alpha=0.6, int C=15, String est="mic_approx")
-{
-  int i;
-  mine_matrix *X;
-  mine_parameter *param;
-  mine_pstats *pstat;
-  char *err;
-  int EST=-1;
-  
-  if (est == "mic_approx")
-    EST = 0;
-  
-  if (est == "mic_e")
-    EST = 1;
-  
-  /* Set parameter */
-  param = (mine_parameter *) Calloc(1,mine_parameter);
-  param->alpha=alpha;
-  param->c=C;
-  param->est=EST;
-  
-  /* Check Error in parameters */
-  err = mine_check_parameter(param);
-  if (err){
-    stop(err);
-  }
-  
-  X = rMattomine(x);
-  
-  pstat = mine_compute_pstats(X, param);
-  
-  NumericMatrix stats(pstat->n, 2);
-  for (i=0; i<pstat->n; i++)
-  {
-    stats(i,0) = pstat->mic[i];
-    stats(i,1) = pstat->tic[i];
-  }
-  /* Free */
-  Free(param);
-  /* free(pstat); */
-  
-  return(stats);
-}

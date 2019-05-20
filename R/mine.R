@@ -29,7 +29,10 @@
 #' (versus all other columns) or a vector of column indices to be used for 
 #' computing all mutual statistics.
 # If not specified it is set to \code{1:ncol(x)}. 
-#' @param alpha an optional number of cells allowed in the \emph{X-by-Y} search-grid. Default value is 0.6 (see Details).
+#' @param alpha float (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
+#' number of samples. If alpha is >=4 then alpha defines directly the B
+#' parameter. If alpha is higher than the number of samples (n) it will be
+#' limited to be n, so B = min(alpha, n) Default value is 0.6 (see Details).
 #' @param C an optional number determining the starting point of the 
 #' \emph{X-by-Y} search-grid. When trying to partition the \emph{x}-axis into 
 #' \emph{X} columns, the algorithm will start with at most \code{C}\emph{X} 

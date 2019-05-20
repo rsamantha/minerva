@@ -34,7 +34,7 @@ exp.create <- function(n){
 
 test_that("Test constant:", {
     mydata <- const.create(1000)
-    mm <- mine(mydata$X, mydata$Y)
+    expect_warning(mm <- mine(mydata$X, mydata$Y))
     expect_equal(mm$MIC, 0, tolerance=1e-4)
     expect_equal(mm$MAS, 0, tolerance=1e-4)
     expect_equal(mm$MEV, 0, tolerance=1e-4)
@@ -79,22 +79,6 @@ test_that("Test exp:", {
 ## }
 ## )
 
-context("Rcpp Interface")
-
-test_that("Test rcpp interface:", {
-    mydata <- lin.create(1000)
-    mm <- mine(mydata$X, mydata$Y)
-    mm2 <- mine_stat(mydata$X, mydata$Y)
-    expect_equal(mm$MIC, mm2, tolerance=1e-6)
-})
-
-
-test_that("Test rcpp interface matrix:", {
-  mydata <- lin.create(1000)
-  mm <- mine(mydata$X, mydata$Y)
-  mm2 <- mine_allvar_onemeasure(as.matrix(mydata), measure="mic")
-  expect_equal(mm$MIC, mm2[1,1], tolerance=1e-6)
-})
 
 context("Check Mictools pipeline")
 
@@ -120,12 +104,31 @@ test_that("mic_strength high correlation == 1",{
   expect_equal(all(ms$MIC == 1), TRUE)
 })
 
-context("Check parameters in Rcpp functions")
 
-test_that("Alpha check through Rcpp interface",{
+context("Rcpp Interface")
+
+test_that("Test rcpp interface:", {
   mydata <- lin.create(1000)
-  expect_error(mine_compute(mydata[, 1], mydata[, 2], alpha=-5), NULL)
-  expect_error(mine_compute(mydata[, 1], mydata[, 2], C=-3), NULL)
-  expect_error(mine_compute(mydata[, 1], mydata[, 2], est='ciccio'), NULL)
+  mm <- mine(mydata$X, mydata$Y, alpha=0.6, C=15)
+  mm2 <- mine_stat(mydata$X, mydata$Y, alpha=0.6, C=15)
+  expect_equal(mm$MIC, mm2, tolerance=1e-6)
+})
+
+test_that("Parameters error through Rcpp interface",{
+  mydata <- lin.create(1000)
+  expect_error(mine_stat(mydata[, 1], mydata[, 2], alpha=-5), NULL)
+  expect_error(mine_stat(mydata[, 1], mydata[, 2], C=-3), NULL)
+  expect_error(mine_stat(mydata[, 1], mydata[, 2], est='ciccio'), NULL)
+  expect_error(mine_stat(mydata[, 1], mydata[, 2], eps=10, measure="mcn"))
+})
+
+test_that("Array dimension in cstats", {
+  x <- matrix(rnorm(320*8), nrow=320, ncol=8)
+  y <- matrix(rnorm(320*4), nrow=320, ncol=4)
+  y2 <- matrix(rnorm(240*8), nrow=240, ncol=8)
+  mictic <- cstats(x, y, alpha=9, C=5, est="mic_e")
+  expect_error(cstats(x, y2, alpha=9, C=5, est="mic_e"))
+  expect_equal(ncol(mictic), 4)
+  expect_equal(nrow(mictic), 8*4)
 })
 

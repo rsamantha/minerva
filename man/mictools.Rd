@@ -11,13 +11,15 @@ mictools(x, alpha = 9, C = 5, seed = 0, nperm = 2e+05,
 \arguments{
 \item{x}{a numeric matrix with N samples on the rows and M variables on the columns (NxM).}
 
-\item{alpha}{a positive number in (0, 1] or greater than 4. This is the alpha parameter for the mine statistic.
-See \code{\link[minerva]{mine}} function for further details.}
+\item{alpha}{float (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
+number of samples. If alpha is >=4 then alpha defines directly the B
+parameter. If alpha is higher than the number of samples (n) it will be
+limited to be n, so B = min(alpha, n) Default value is 0.6 (see Details).}
 
 \item{C}{a positive integer number, the \code{C} parameter of the \code{mine} statistic. 
 See \code{\link[minerva]{mine}} function for further details.}
 
-\item{seed}{set the seed for random number generation repreoducibility}
+\item{seed}{seed for random number generation reproducibility}
 
 \item{nperm}{integer, number of permutation to perform}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mictools.R
 \name{mic_strength}
 \alias{mic_strength}
-\title{Compute the mic strenght}
+\title{Compute the association strengh}
 \usage{
 mic_strength(x, pval, alpha = NULL, C = 5, pthr = 0.05,
   pval.col = NULL)
@@ -13,8 +13,10 @@ mic_strength(x, pval, alpha = NULL, C = 5, pthr = 0.05,
 \item{pval}{a data.frame with pvalues for each pair of association of the \code{x} input matrix. It should contain two colums with 
 the indices of the computed association according to the x input matrix}
 
-\item{alpha}{a number between 0 and 1 or >= 4. If NULL is passed an automatic set of the parameter is performed based on the number
-of samples in the matrix \code{x}.}
+\item{alpha}{float (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
+number of samples. If alpha is >=4 then alpha defines directly the B
+parameter. If alpha is higher than the number of samples (n) it will be
+limited to be n, so B = min(alpha, n) Default value is 0.6 (see Details).}
 
 \item{C}{a positive integer number, the \code{C} parameter of the \code{mine} statistic. 
 See \code{\link[minerva]{mine}} function for further details.}
@@ -53,6 +55,7 @@ If one value is passed it refers to the \code{pvalue} column and the consecutive
 data(Spellman)
 mydata <- as.matrix(Spellman[, 10:20])
 ticenull <- mictools(mydata, nperm=1000)
+
 ## Use the nominal pvalue:
 ms <- mic_strength(mydata, pval=ticenull$pval, alpha=NULL, pval.col = c(6, 4,5))
 

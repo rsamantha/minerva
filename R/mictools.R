@@ -3,12 +3,10 @@
 #' 
 #' @aliases mictools
 #' @param x a numeric matrix with N samples on the rows and M variables on the columns (NxM). 
-#' @param alpha a positive number in (0, 1] or greater than 4. This is the alpha parameter for the mine statistic.
-#' See \code{\link[minerva]{mine}} function for further details.
 #' @param C a positive integer number, the \code{C} parameter of the \code{mine} statistic. 
 #' See \code{\link[minerva]{mine}} function for further details.
 #' @param nperm integer, number of permutation to perform
-#' @param seed set the seed for random number generation repreoducibility
+#' @param seed seed for random number generation reproducibility
 #' @param p.adjust.method method for pvalue adjustment, see \code{\link[stats]{p.adjust}} for available methods.
 #' @inheritParams mine
 #' @details This is a function to implement the `mictools` pipeline.
@@ -68,9 +66,13 @@ mictools <- function(x, alpha=9, C=5, seed=0, nperm=200000, p.adjust.method="BH"
   histcumsum <- rev(cumsum(rev(histtic$counts)))
   
   ## Compute observed values
-  ticmicmat <- mictools_pstats(x, alpha=alpha, C=C, est="mic_e")
-  ix <- t(utils::combn(1:ncol(x),2))
-  ticmicmat <- data.frame(TIC=ticmicmat[,2], I1=ix[,1], I2=ix[,2], Var1=varnames[ix[,1]], Var2=varnames[ix[,2]], stringsAsFactors = FALSE)
+  ## ticmicmat <- mictools_pstats(x, alpha=alpha, C=C, est="mic_e")
+  ticmicmat <- pstats(x, alpha=alpha, C=C, est="mic_e")
+  
+  # ix <- t(utils::combn(1:ncol(x),2))
+  ticmicmat <- data.frame(TIC=ticmicmat[, 4], I1=ticmicmat[, 1], I2=ticmicmat[,2], 
+                          VarNames1=varnames[ticmicmat[, 1]], VarNames2=varnames[ticmicmat[, 2]], 
+                          stringsAsFactors = FALSE)
   
   nulldist <- data.frame(BinStart=bins[1:(length(bins)-1)], BinEnd=bins[2:(length(bins))], 
                          NullCount=histtic$counts, NullCumSum=histcumsum, stringsAsFactors = FALSE)
@@ -83,7 +85,9 @@ mictools <- function(x, alpha=9, C=5, seed=0, nperm=200000, p.adjust.method="BH"
   
   ## One-dimensional linear interpolation
   pval <- stats::approx(bins[1:(length(bins)-1)], y = histcumsum, xout=ticmicmat[,1], method="linear", rule=2)$y / (histcumsum[1] + 1)
-  pval.df <- data.frame(pval=pval, I1=ix[,1], I2=ix[,2], Var1=varnames[ix[,1]], Var2=varnames[ix[,2]], stringsAsFactors = FALSE)
+  pval.df <- data.frame(pval=pval, I1=ticmicmat[,2], I2=ticmicmat[,3], 
+                        Var1=varnames[ticmicmat[,2]], Var2=varnames[ticmicmat[,3]], 
+                        stringsAsFactors = FALSE)
   pval.df$adj.P.Val <- stats::p.adjust(pval.df$pval, method=p.adjust.method)
   
   ## Return values as list
@@ -93,7 +97,7 @@ mictools <- function(x, alpha=9, C=5, seed=0, nperm=200000, p.adjust.method="BH"
 }
 
 
-#' Compute the mic strenght 
+#' Compute the association strengh 
 #' 
 #' This function uses the null distribution of the \code{tic_e} computed with the function \code{\link[minerva]{mictools}}. 
 #' Based on the available pvalue and the permutation null distribution it identifies reliable association between variables.
@@ -104,8 +108,6 @@ mictools <- function(x, alpha=9, C=5, seed=0, nperm=200000, p.adjust.method="BH"
 #' @param pthr threshold on pvalue for measure to consider for computing mic_e
 #' @param pval.col an integer or character or vector relative to the columns of \code{pval} dataframe respectively for \code{pvalue}, 
 #' association between variable 1, variable 2 in the \code{x} input matrix. See Details for further information.
-#' @param alpha a number between 0 and 1 or >= 4. If NULL is passed an automatic set of the parameter is performed based on the number
-#'  of samples in the matrix \code{x}.
 #' @inheritParams mictools
 #' @details The method implemented here is a wrapper for the original method published by Albaese et al. (2018). The python version
 #' is available at \url{https://github.com/minepy/mictools}.
@@ -130,6 +132,7 @@ mictools <- function(x, alpha=9, C=5, seed=0, nperm=200000, p.adjust.method="BH"
 #' data(Spellman)
 #' mydata <- as.matrix(Spellman[, 10:20])
 #' ticenull <- mictools(mydata, nperm=1000)
+#' 
 #' ## Use the nominal pvalue:
 #' ms <- mic_strength(mydata, pval=ticenull$pval, alpha=NULL, pval.col = c(6, 4,5))
 #' 

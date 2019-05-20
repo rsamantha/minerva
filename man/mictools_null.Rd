@@ -2,13 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{mictools_null}
 \alias{mictools_null}
-\alias{mictools_pstats}
 \title{This set of functions are helper function to compute null distribution of the \code{tic_e} and 
 \code{tic_e} observed distribution from a matrix}
 \usage{
 mictools_null(x, alpha = 9, C = 5, nperm = 200000L, seed = 0L)
-
-mictools_pstats(x, alpha = 0.6, C = 15L, est = "mic_approx")
 }
 \arguments{
 \item{x}{matrix N x M with M variables and N samples}
@@ -20,8 +17,6 @@ mictools_pstats(x, alpha = 0.6, C = 15L, est = "mic_approx")
 \item{nperm}{numper of permutation}
 
 \item{seed}{integer to set the starting seed for random number generation (for reproducibility).}
-
-\item{est}{estimation parameter for the mine statistic}
 }
 \value{
 It returns a vector of \code{nperm} \code{tic_e} values.
@@ -33,8 +28,6 @@ This set of functions are helper function to compute null distribution of the \c
 \section{Functions}{
 \itemize{
 \item \code{mictools_null}: compute the \code{tic_e} null distribution
-
-\item \code{mictools_pstats}: Computing the tic and mic statistics
 }}
 
 \seealso{

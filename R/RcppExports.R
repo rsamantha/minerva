@@ -33,33 +33,36 @@ mine_stat <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx", measure = "
 #' (condensed matrix). If m is the number of variables, then for i < j < m, the
 #' statistic between (col) i and j is stored in k = m*i - i*(i+1)/2 - i - 1 + j.
 #' The length of the vectors is n = m*(m-1)/2.
-#' @param x Numeric matrix of m-by-n of n variables and m samples
-#' @param alpha alpha parameter for the mine statistic
-#' @param C c parameter for the mine statistic
-#' @param est estimation parameter for the mine statistic
-#' 
+#' @inheritParams cstats
 #' @return
-#' Matrix (n x (n-1)/2) by 4. The first and second column indicate the indexes relative of the columns 
-#' in the inut matrix the statistic is computed for.
-#' Column 3 contains the MIC statistic, while column 4 contains the normalized TIC statistic.
+#' A matrix of (n x (n-1)/2) rows and 4 columns. The first and second column are
+#' the indexes relative to the columns in the input matrix \code{x} for which the statistic is computed for.
+#' Column 3 contains the MIC statistic, while column 4 contains the normalized TIC statistic. 
+#' @examples
+#' ## Create a matrix of random numbers
+#' ## 10 variables x 100 samples
+#' x <- matrix(rnorm(1000), ncol=10)
+#' res <- pstats(x)
+#' 
+#' head(res)
+#' 
 #' @export
-mine_compute_pstats <- function(x, alpha = 0.6, C = 15, est = "mic_approx") {
-    .Call('_minerva_mine_compute_pstats', PACKAGE = 'minerva', x, alpha, C, est)
+pstats <- function(x, alpha = 0.6, C = 15, est = "mic_approx") {
+    .Call('_minerva_pstats', PACKAGE = 'minerva', x, alpha, C, est)
 }
 
-#'Compute statistics (MIC and normalized TIC) between each pair of the two
+#' Compute statistics (MIC and normalized TIC) between each pair of the two
 #' collections of variables (convenience function).
 #' If n and m are the number of variables in X and Y respectively, then the
-#'   statistic between the (row) i (for X) and j (for Y) is stored in mic[i, j]
-#' and tic[i, j].
-#'  
+#'   statistic between the (row) i (for X) and j (for Y) is stored in \code{mic[i, j]}
+#' and \code{tic[i, j]}.
 #' @param x Numeric Matrix of m-by-n with n variables and m samples.
 #' @param y Numeric Matrix of m-by-p with p variables and m samples.
-#' @param alpha float (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
+#' @param alpha number (0, 1.0] or >=4 if alpha is in (0,1] then B will be max(n^alpha, 4) where n is the
 #' number of samples. If alpha is >=4 then alpha defines directly the B
 #' parameter. If alpha is higher than the number of samples (n) it will be
 #' limited to be n, so B = min(alpha, n).
-#' @param C float (> 0) determines how many more clumps there will be than columns in
+#' @param C number (> 0) determines how many more clumps there will be than columns in
 #' every partition. Default value is 15, meaning that when trying to
 #' draw x grid lines on the x-axis, the algorithm will start with at
 #' most 15*x clumps.
@@ -71,14 +74,14 @@ mine_compute_pstats <- function(x, alpha = 0.6, C = 15, est = "mic_approx") {
 #' @return list of two elements:
 #' MIC: the MIC statistic matrix (n x p).
 #' TIC: the normalized TIC statistic matrix (n x p).
+#' @examples
+#' x = matrix(rnorm(2560), ncol=8, nrow=320)
+#' y = matrix(rnorm(1280), ncol=4, nrow=320)
+#' 
+#' mictic = cstats(x, y, alpha=9, C=5, est="mic_e")
 #' @export
-mine_compute_cstats <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx") {
-    .Call('_minerva_mine_compute_cstats', PACKAGE = 'minerva', x, y, alpha, C, est)
-}
-
-#' @export
-mine_allvar_onemeasure <- function(x, alpha = 0.6, C = 15, est = "mic_approx", measure = "mic", eps = 0.0, p = -1, norm = FALSE) {
-    .Call('_minerva_mine_allvar_onemeasure', PACKAGE = 'minerva', x, alpha, C, est, measure, eps, p, norm)
+cstats <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx") {
+    .Call('_minerva_cstats', PACKAGE = 'minerva', x, y, alpha, C, est)
 }
 
 #' This set of functions are helper function to compute null distribution of the \code{tic_e} and 
@@ -94,13 +97,5 @@ mine_allvar_onemeasure <- function(x, alpha = 0.6, C = 15, est = "mic_approx", m
 #' @export
 mictools_null <- function(x, alpha = 9, C = 5, nperm = 200000L, seed = 0L) {
     .Call('_minerva_mictools_null', PACKAGE = 'minerva', x, alpha, C, nperm, seed)
-}
-
-#' @inheritParams mictools_null
-#' @param est estimation parameter for the mine statistic
-#' @describeIn mictools_null Computing the tic and mic statistics
-#' @export
-mictools_pstats <- function(x, alpha = 0.6, C = 15L, est = "mic_approx") {
-    .Call('_minerva_mictools_pstats', PACKAGE = 'minerva', x, alpha, C, est)
 }
 

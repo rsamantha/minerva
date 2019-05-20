@@ -25,9 +25,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// mine_compute_pstats
-NumericMatrix mine_compute_pstats(NumericMatrix x, double alpha, double C, String est);
-RcppExport SEXP _minerva_mine_compute_pstats(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
+// pstats
+NumericMatrix pstats(NumericMatrix x, double alpha, double C, String est);
+RcppExport SEXP _minerva_pstats(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,13 +35,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type C(CSEXP);
     Rcpp::traits::input_parameter< String >::type est(estSEXP);
-    rcpp_result_gen = Rcpp::wrap(mine_compute_pstats(x, alpha, C, est));
+    rcpp_result_gen = Rcpp::wrap(pstats(x, alpha, C, est));
     return rcpp_result_gen;
 END_RCPP
 }
-// mine_compute_cstats
-NumericMatrix mine_compute_cstats(NumericMatrix x, NumericMatrix y, double alpha, double C, String est);
-RcppExport SEXP _minerva_mine_compute_cstats(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
+// cstats
+NumericMatrix cstats(NumericMatrix x, NumericMatrix y, double alpha, double C, String est);
+RcppExport SEXP _minerva_cstats(SEXP xSEXP, SEXP ySEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -50,25 +50,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type C(CSEXP);
     Rcpp::traits::input_parameter< String >::type est(estSEXP);
-    rcpp_result_gen = Rcpp::wrap(mine_compute_cstats(x, y, alpha, C, est));
-    return rcpp_result_gen;
-END_RCPP
-}
-// mine_allvar_onemeasure
-NumericMatrix mine_allvar_onemeasure(NumericMatrix x, double alpha, double C, String est, String measure, double eps, double p, bool norm);
-RcppExport SEXP _minerva_mine_allvar_onemeasure(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP, SEXP measureSEXP, SEXP epsSEXP, SEXP pSEXP, SEXP normSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< double >::type C(CSEXP);
-    Rcpp::traits::input_parameter< String >::type est(estSEXP);
-    Rcpp::traits::input_parameter< String >::type measure(measureSEXP);
-    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
-    Rcpp::traits::input_parameter< double >::type p(pSEXP);
-    Rcpp::traits::input_parameter< bool >::type norm(normSEXP);
-    rcpp_result_gen = Rcpp::wrap(mine_allvar_onemeasure(x, alpha, C, est, measure, eps, p, norm));
+    rcpp_result_gen = Rcpp::wrap(cstats(x, y, alpha, C, est));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -87,31 +69,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// mictools_pstats
-NumericMatrix mictools_pstats(NumericMatrix x, double alpha, int C, String est);
-RcppExport SEXP _minerva_mictools_pstats(SEXP xSEXP, SEXP alphaSEXP, SEXP CSEXP, SEXP estSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< int >::type C(CSEXP);
-    Rcpp::traits::input_parameter< String >::type est(estSEXP);
-    rcpp_result_gen = Rcpp::wrap(mictools_pstats(x, alpha, C, est));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 RcppExport SEXP mineRall(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 RcppExport SEXP mineRonevar(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_minerva_mine_stat", (DL_FUNC) &_minerva_mine_stat, 9},
-    {"_minerva_mine_compute_pstats", (DL_FUNC) &_minerva_mine_compute_pstats, 4},
-    {"_minerva_mine_compute_cstats", (DL_FUNC) &_minerva_mine_compute_cstats, 5},
-    {"_minerva_mine_allvar_onemeasure", (DL_FUNC) &_minerva_mine_allvar_onemeasure, 8},
+    {"_minerva_pstats", (DL_FUNC) &_minerva_pstats, 4},
+    {"_minerva_cstats", (DL_FUNC) &_minerva_cstats, 5},
     {"_minerva_mictools_null", (DL_FUNC) &_minerva_mictools_null, 5},
-    {"_minerva_mictools_pstats", (DL_FUNC) &_minerva_mictools_pstats, 4},
     {"mineRall",    (DL_FUNC) &mineRall,    7},
     {"mineRonevar", (DL_FUNC) &mineRonevar, 6},
     {NULL, NULL, 0}
