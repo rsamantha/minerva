@@ -56,44 +56,43 @@ TIC_e values respectively.}
 \code{cor}-based functions. See \code{cor} for further details.}
 
 \item{use}{Default value is "all.obs". This variable is passed directly to the 
-\code{cor}-based functions. See \code{cor} for further details.}
+`cor`-based functions. See [stats::cor()] for further details.}
 
-\item{\dots}{currently ignored}
+\item{...}{currently ignored}
 }
 \value{
 The Maximal Information-Based Nonparametric Exploration (MINE) statistics 
 provide quantitative evaluations of different aspects of the relationship 
 between two variables. 
 In particular \code{mine} returns a list of 5 statistics: 
-  \item{MIC}{ \strong{Maximal Information Coefficient.} \cr 
-    It is related to the relationship strenght and it can be interpreted as a 
-    correlation measure. It is symmetric and it ranges in [0,1], where it 
-    tends to 0 for statistically independent data and it approaches 1 in 
-    probability for noiseless functional relationships (more details can 
-                                                        ben found in the original paper). }
-\item{MAS}{ \strong{Maximum Asymmetry Score.} \cr 
-  It captures the deviation from monotonicity. Note that 
-  \eqn{\textrm{MAS} < \textrm{MIC}}{MAS < MIC}. \cr
-  \emph{Note:} it can be useful for detecting periodic relationships 
-  (unknown frequencies). }
-\item{MEV}{ \strong{Maximum Edge Value.} \cr 
-  It measures the closeness to being a function. Note that 
-  \eqn{\textrm{MEV} \leq \textrm{MIC}}{MEV <= MIC}. }
-\item{MCN}{ \strong{Minimum Cell Number.} \cr 
-  It is a complexity measure. }
-\item{MIC-R2}{It is the difference between the MIC value and the Pearson
-  correlation coefficient. } \cr
-
-When computing \code{mine} between two numeric vectors \code{x} and \code{y}, 
-the output is a list of 5 numeric values. When \code{master} is provided, 
-\code{mine} returns a list of 5 matrices having \code{ncol} equal to 
-\emph{m}. In particular, if \code{master} is a single value, 
-then \code{mine} returns a list of 5 matrices having 1 column, 
-whose rows correspond to the MINE measures between the \emph{master} 
-column versus all. Instead if \code{master} is a vector of \emph{m} indices,
-then \code{mine} output is a list of 5 \emph{m-by-m} matrices, whose element 
-\emph{i,j} corresponds to the MINE statistics computed between the \emph{i} 
-and \emph{j} columns of \code{x}.
+  * _MIC_ **Maximal Information Coefficient.**
+     It is related to the relationship strenght and it can be interpreted as a 
+     correlation measure. It is symmetric and it ranges in (0,1), where it 
+     tends to 0 for statistically independent data and it approaches 1 in 
+     probability for noiseless functional relationships (more details can 
+     be found in the original paper).
+   * _MAS_ **Maximum Asymmetry Score.** 
+     It captures the deviation from monotonicity. Note that 
+     \eqn{\textrm{MAS} < \textrm{MIC}}{MAS < MIC}.
+     \emph{Note:} it can be useful for detecting periodic relationships 
+     (unknown frequencies).
+   * _MEV_ **Maximum Edge Value.** 
+     It measures the closeness to being a function. Note that 
+     \eqn{\textrm{MEV} \leq \textrm{MIC}}{MEV <= MIC}.
+   * _MCN_ **Minimum Cell Number.** 
+     It is a complexity measure.
+   * _MIC-R2_ It is the difference between the MIC value and the Pearson
+     correlation coefficient.
+When computing [mine()] between two numeric vectors `x` and `y`, 
+the output is a list of 5 numeric values. When `master` is provided, 
+[mine()] returns a list of 5 matrices having `ncol` equal to 
+_m_. In particular, if `master` is a single value, 
+then [mine()] returns a list of 5 matrices having 1 column, 
+whose rows correspond to the MINE measures between the _master_ 
+column versus all. Instead if `master` is a vector of _m_ indices,
+then [mine()] output is a list of 5 _m-by-m_ matrices, whose element 
+_i,j_ corresponds to the MINE statistics computed between the _i_ 
+and _j_ columns of `x`.
 }
 \description{
 MINE family statistics
@@ -101,52 +100,52 @@ Maximal Information-Based Nonparametric Exploration (MINE)
 statistics. \code{mine} computes the MINE family measures between two variables.
 }
 \details{
-\code{mine} is an R wrapper for the C engine \emph{cmine} 
-(\url{http://minepy.readthedocs.io/en/latest/}), 
+[mine()] is an R wrapper for the C engine _cmine_
+(<http://minepy.readthedocs.io/en/latest/>), 
 an implementation of Maximal Information-Based Nonparametric Exploration (MINE) 
 statistics. The MINE statistics were firstly detailed in 
-D. Reshef et al. (2011) \emph{Detecting novel associations in large datasets}. 
-Science 334, 6062 (\url{http://www.exploredata.net}).
+D. Reshef et al. (2011) _Detecting novel associations in large datasets_. 
+Science 334, 6062 (<http://www.exploredata.net>).
 
 Here we recall the main concepts of the MINE family statistics.
-Let \eqn{D={(x,y)}} be the set of \emph{n} ordered pairs of elements of \code{x}
-and \code{y}. The data space is partitioned in 
-an \emph{X-by-Y} grid, grouping the \emph{x} and \emph{y} values 
-in \emph{X} and \emph{Y} bins respectively.\cr
+Let \eqn{D={(x,y)}} be the set of _n_ ordered pairs of elements of `x` 
+and `y`. The data space is partitioned in 
+an _X-by-Y_ grid, grouping the _x_ and _y_ values 
+in _X_ and _Y_ bins respectively.
 
-The \strong{Maximal Information Coefficient (MIC)} is defined as 
+The **Maximal Information Coefficient (MIC)** is defined as 
 \deqn{\textrm{MIC}(D)=\max_{XY<B(n)} M(D)_{X,Y} = \max_{XY<B(n)} \frac{I^*(D,X,Y)}{log(\min{X,Y})},}{MIC(D)=max_{XY<B(n)} M(D)_{X,Y}=max_{XY<B(n)} I*(D,X,Y)/log(min(X,Y)),} where
 \eqn{B(n)=n^{\alpha}} is the search-grid size,
 \eqn{I^*(D,X,Y)}{I*(D,X,Y)}
-is the maximum mutual information over all grids \emph{X-by-Y}, of the distribution induced by D on 
-a grid having \emph{X} and \emph{Y} bins (where the probability mass on a cell 
-                                          of the grid is the fraction of points of D falling in that cell).
+is the maximum mutual information over all grids _X-by-Y_, of the distribution induced by D on 
+a grid having _X_ and _Y_ bins (where the probability mass on a cell 
+of the grid is the fraction of points of D falling in that cell). 
 The other statistics of the MINE family are derived from the mutual information 
-matrix achieved by an \emph{X-by-Y} grid on D.\cr
+matrix achieved by an _X-by-Y_ grid on D.
 
-The \strong{Maximum Asymmetry Score (MAS)} is defined as
+The **Maximum Asymmetry Score (MAS)** is defined as 
 \deqn{\textrm{MAS}(D) = \max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}{MAS(D) = max_{XY<B(n)} |M(D)_{X,Y} - M(D)_{Y,X}|.}
 
-The \strong{Maximum Edge Value (MEV)} is defined as
+The **Maximum Edge Value (MEV)** is defined as 
 \deqn{\textrm{MEV}(D) = \max_{XY<B(n)} \{M(D)_{X,Y}: X=2~or~Y=2\}.}{MEV(D) = max_{XY<B(n)} {M(D)_{X,Y}: X=2 or Y=2}.}
 
-The \strong{Minimum Cell Number (MCN)} is defined as
+The **Minimum Cell Number (MCN)** is defined as
 \deqn{\textrm{MCN}(D,\epsilon) = \min_{XY<B(n)} \{\log(XY): M(D)_{X,Y} \geq (1-\epsilon)MIC(D)\}.}{MCN(D,\epsilon) = min_{XY<B(n)} {log(XY): M(D)_{X,Y} >= (1-\epsilon)MIC(D)}.}
 More details are provided in the supplementary material (SOM) of the original paper.
 
-The MINE statistics can be computed for two numeric vectors \code{x} and \code{y}. 
+The MINE statistics can be computed for two numeric vectors `x` and `y`. 
 Otherwise a matrix (or data frame) can be provided and two options are available 
-according to the value of \code{master}. If \code{master} is a column identifier, 
-then the MINE statistics are computed for the \emph{master} variable versus the 
-other matrix columns. If \code{master} is a set of column identifiers, then all 
+according to the value of `master`. If `master` is a column identifier, 
+then the MINE statistics are computed for the _master_ variable versus the 
+other matrix columns. If `master`` is a set of column identifiers, then all 
 mutual MINE statistics are computed among the column subset.
-\code{master}, \code{alpha}, and \code{C} refers respectively to the \emph{style},
-\emph{exp}, and \emph{c} parameters of the original \emph{java} code. 
+`master`, `alpha`, and `C` refers respectively to the _style_,
+_exp_, and _c_ parameters of the original _java_ code. 
 In the original article, the authors state that the default value \eqn{\alpha=0.6} 
 (which is the exponent of the search-grid size \eqn{B(n)=n^{\alpha}}) has been 
-empirically chosen. It is worthwhile noting that \code{alpha} and \code{C} are 
+empirically chosen. It is worthwhile noting that `alpha` and `C` are 
 defined to obtain an heuristic approximation in a reasonable amount of time. In case
-of small sample size (\emph{n}) it is preferable to increase \code{alpha} to 1 to 
+of small sample size (_n_) it is preferable to increase `alpha` to 1 to 
 obtain a solution closer to the theoretical one.
 }
 \examples{
@@ -254,20 +253,14 @@ res <- mine(Spellman,master=1,n.cores=parallel::detectCores()-1)}
 }
 \references{
 D. Reshef, Y. Reshef, H. Finucane, S. Grossman, G. McVean, P. Turnbaugh, 
-E. Lander, M. Mitzenmacher, P. Sabeti. (2011)
-\emph{Detecting novel associations in large datasets}. 
-Science 334, 6062\cr
-\url{http://www.exploredata.net}\cr
-(SOM: Supplementary Online Material at
-  \url{http://www.sciencemag.org/content/suppl/2011/12/14/334.6062.1518.DC1})
+E. Lander, M. Mitzenmacher, P. Sabeti. (2011) 
+_Detecting novel associations in large datasets_.
+Science 334, 6062 <http://www.exploredata.net>
+(SOM: Supplementary Online Material at  <http://www.sciencemag.org/content/suppl/2011/12/14/334.6062.1518.DC1>)
 
-D. Albanese, M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman,
-C. Furlanello. 
-\emph{minerva and minepy: a C engine for the MINE suite and its R, Python and MATLAB wrappers}. 
-Bioinformatics (2013) 29(3): 407-408, \doi{doi:10.1093/bioinformatics/bts707}.\cr
-
-\emph{minepy. Maximal Information-based Nonparametric Exploration in C and Python.}\cr 
-\url{http://minepy.sourceforge.net}
+D. Albanese, M. Filosi, R. Visintainer, S. Riccadonna, G. Jurman, C. Furlanello. 
+_minerva and minepy: a C engine for the MINE suite and its R, Python and MATLAB wrappers._ 
+Bioinformatics (2013) 29(3): 407-408 first published online December 14, 2012 <doi:10.1093/bioinformatics/bts707>.
 }
 \author{
 Michele Filosi and Roberto Visintainer

@@ -1,0 +1,6 @@
+library(minerva)
+data(Spellman)
+Spellman <- as.matrix(Spellman)
+mmres <- mictools(Spellman[, 1:10], nperm=1000)
+mmres$pval<- 
+ms <- mic_strength(Spellman[, 1:10], pval=mmres$pval, alpha=NULL, pval.col = c(6, 4,5))

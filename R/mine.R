@@ -386,8 +386,12 @@ mine <- function(x, y=NULL, master=NULL, alpha=0.6, C=15, n.cores=1, var.thr=1e-
 check.inputs <- function(x,y,alpha,C,n.cores,var.thr,eps,est,na.rm,use) {
 
   ## MINE parameters check!
-  if (alpha<=0.0 || alpha>1.0 || !is.numeric(alpha))
-    stop("'alpha' must be in (0.0, 1.0]",call.=FALSE)
+  if (!is.numeric(alpha)){
+    stop("'alpha should be numeric", call.=FALSE)
+  } else {
+    if ((alpha<=0.0 || alpha>1.0) && alpha <=4.0)
+      stop("'alpha' must be in (0.0, 1.0] or >= 4.0",call.=FALSE)
+  }
   if(C<=0.0 || !is.numeric(C))
     stop("'C' must be > 0.0",call.=FALSE)
 
