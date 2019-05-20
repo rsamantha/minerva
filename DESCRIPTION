@@ -10,7 +10,7 @@ Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         "samantha.riccadonna@fmach.it"), person("Giuseppe", "Jurman", role =
         "ctb", email = "jurman@fbk.eu"), person("Cesare", "Furlanello",
         role = "ctb", email = "furlan@fbk.eu"))
-Depends: R (>= 2.14.0)
+Depends: R (>= 3.3.0)
 Imports: parallel, Rcpp, stats, graphics, utils
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: testthat

@@ -47,10 +47,10 @@ x <- as.matrix(rnorm(1000), ncol=10)
 y <- as.matrix(rnorm(1000), ncol=10)
 
 ## Compare feature of the same matrix
-mine_compute_pstat(x)
+pstats(x)
 
 ## Compare features of matrix x with feature in matrix y
-mine_compute_cstat(x, y)
+cstats(x, y)
 ```
 
 ## Tests

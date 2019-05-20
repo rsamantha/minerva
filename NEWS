@@ -3,6 +3,8 @@ V. 1.5.4
 - Added function for the mictools pipeline
 - Updated parameter in mine function (adding tic_e normalization)
 - Improve extraction of one variable at the time
+- mine_compute_pstat -> pstats
+- mine_compute_cstat -> cstats
 
 V. 1.5.0
 ------
