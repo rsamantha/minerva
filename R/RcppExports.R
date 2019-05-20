@@ -13,7 +13,7 @@
 #' @param measure integer indicating which measure to return
 #' @param eps eps value for MCN statistic should be in (0,1). If NA is passed then the normal MCN statistic is returned.
 #' @param p probability for the generalized mic
-#' @param norm boolean if require normalization between 0 and 1 for the tic statistic
+#' @param norm boolean if require normalization between 0 and 1 for the \code{tic} statistic
 #' @details This is a wrapper function to compute the mine statistic between two variables.
 #' for more details on the available measure and the meaning of the other parameters see also the 
 #' documentation for the \code{\link[minerva]{mine}} function.
@@ -24,34 +24,6 @@
 #' @export
 mine_stat <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx", measure = "mic", eps = 0.0, p = -1, norm = FALSE) {
     .Call('_minerva_mine_stat', PACKAGE = 'minerva', x, y, alpha, C, est, measure, eps, p, norm)
-}
-
-#' @export
-mine_allvar_onemeasure <- function(x, alpha = 0.6, C = 15, est = "mic_approx", measure = "mic", eps = 0.0, p = -1, norm = FALSE) {
-    .Call('_minerva_mine_allvar_onemeasure', PACKAGE = 'minerva', x, alpha, C, est, measure, eps, p, norm)
-}
-
-#' This set of functions are helper function to compute null distribution of the \code{tic_e} and 
-#' \code{tic_e} observed distribution from a matrix
-#'
-#' @inheritParams mine_stat
-#' @param x matrix N x M with M variables and N samples
-#' @param nperm numper of permutation
-#' @param seed integer to set the starting seed for random number generation (for reproducibility).
-#' @describeIn mictools_null compute the \code{tic_e} null distribution
-#' @return It returns a vector of \code{nperm} \code{tic_e} values.
-#' @seealso \code{\link[minerva]{mictools}}
-#' @export
-mictools_null <- function(x, alpha = 9, C = 5, nperm = 200000L, seed = 0L) {
-    .Call('_minerva_mictools_null', PACKAGE = 'minerva', x, alpha, C, nperm, seed)
-}
-
-#' @inheritParams mictools_null
-#' @param est estimation parameter for the mine statistic
-#' @describeIn mictools_null Computing the tic and mic statistics
-#' @export
-mictools_pstats <- function(x, alpha = 0.6, C = 15L, est = "mic_approx") {
-    .Call('_minerva_mictools_pstats', PACKAGE = 'minerva', x, alpha, C, est)
 }
 
 #' Compute pairwise statistics (MIC and normalized TIC) between variables
@@ -102,5 +74,33 @@ mine_compute_pstats <- function(x, alpha = 0.6, C = 15, est = "mic_approx") {
 #' @export
 mine_compute_cstats <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx") {
     .Call('_minerva_mine_compute_cstats', PACKAGE = 'minerva', x, y, alpha, C, est)
+}
+
+#' @export
+mine_allvar_onemeasure <- function(x, alpha = 0.6, C = 15, est = "mic_approx", measure = "mic", eps = 0.0, p = -1, norm = FALSE) {
+    .Call('_minerva_mine_allvar_onemeasure', PACKAGE = 'minerva', x, alpha, C, est, measure, eps, p, norm)
+}
+
+#' This set of functions are helper function to compute null distribution of the \code{tic_e} and 
+#' \code{tic_e} observed distribution from a matrix
+#'
+#' @inheritParams mine_stat
+#' @param x matrix N x M with M variables and N samples
+#' @param nperm numper of permutation
+#' @param seed integer to set the starting seed for random number generation (for reproducibility).
+#' @describeIn mictools_null compute the \code{tic_e} null distribution
+#' @return It returns a vector of \code{nperm} \code{tic_e} values.
+#' @seealso \code{\link[minerva]{mictools}}
+#' @export
+mictools_null <- function(x, alpha = 9, C = 5, nperm = 200000L, seed = 0L) {
+    .Call('_minerva_mictools_null', PACKAGE = 'minerva', x, alpha, C, nperm, seed)
+}
+
+#' @inheritParams mictools_null
+#' @param est estimation parameter for the mine statistic
+#' @describeIn mictools_null Computing the tic and mic statistics
+#' @export
+mictools_pstats <- function(x, alpha = 0.6, C = 15L, est = "mic_approx") {
+    .Call('_minerva_mictools_pstats', PACKAGE = 'minerva', x, alpha, C, est)
 }
 

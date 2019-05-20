@@ -26,7 +26,7 @@ Possible values are \code{"mic_approx"} or \code{"mic_e"}}
 
 \item{p}{probability for the generalized mic}
 
-\item{norm}{boolean if require normalization between 0 and 1 for the tic statistic}
+\item{norm}{boolean if require normalization between 0 and 1 for the \code{tic} statistic}
 }
 \description{
 This is an helper function to compute one \code{mine} statistic.

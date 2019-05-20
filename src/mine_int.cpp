@@ -74,20 +74,7 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   lest = switch_est(est);
   m = switch_measure(measure);
   
-<<<<<<< HEAD
-  /* Check size consistency of input vectors */
-  if (x.size() != y.size())
-    return(NA_REAL);
-  
-  int EST=0;
-  if (est == "mic_e")
-    {
-      EST = 1;
-    }
-  
-=======
   /* Allocate parameter class */
->>>>>>> devel
   param = (mine_parameter *) Calloc(1,mine_parameter);
   param->alpha=alpha;
   param->c=C;
@@ -147,7 +134,6 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   return(res);
 }
 
-<<<<<<< HEAD
 
 //' Compute pairwise statistics (MIC and normalized TIC) between variables
 //' (convenience function).
@@ -323,7 +309,7 @@ NumericMatrix mine_compute_cstats(NumericMatrix x, NumericMatrix y, double alpha
   free(cres);
   return(rres);
 }
-=======
+
 //' @export
 // [[Rcpp::export]]
 NumericMatrix mine_allvar_onemeasure(NumericMatrix x, double alpha=0.6, double C=15, String est="mic_approx", String measure="mic", double eps=0.0, double p=-1, bool norm=false)
@@ -510,4 +496,3 @@ NumericMatrix mictools_pstats(NumericMatrix x, double alpha=0.6, int C=15, Strin
   
   return(stats);
 }
->>>>>>> devel
