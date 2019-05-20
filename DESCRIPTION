@@ -1,6 +1,6 @@
 Package: minerva
 Version: 1.5.4
-Date: 2019-05-16
+Date: 2019-05-20
 Title: Maximal Information-Based Nonparametric Exploration for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         = "michele.filosi@gmail.com"), person("Roberto", "Visintainer", role =
