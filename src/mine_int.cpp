@@ -2,14 +2,13 @@
 #include <Rcpp.h>
 #include <map>
 #include "mine.h"
+#include "mine_int.hpp"
 
 /* DEFINE CONSTANT MAPS FOR MEASURE AND EST */
-const std::map<std::string, int> MEASURE;
-MEASURE["mic"]=1;
-MEASURE["mas"]=2;
-  
-// {{"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6}};
-const std::map<std::string, int> EST = {{"mic_approx", 0}, {"mic_e", 1}};
+const std::map<std::string, int> MEASURE = create_measure_map();
+  //({{"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6}});
+const std::map<std::string, int> EST = create_est_map();
+//({{"mic_approx", 0}, {"mic_e", 1}});
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
