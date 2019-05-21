@@ -2,7 +2,7 @@
 #include <Rcpp.h>
 #include <map>
 #include "mine.h"
-#include "mine_int.hpp"
+#include "mine_int.h"
 
 /* DEFINE CONSTANT MAPS FOR MEASURE AND EST */
 const std::map<std::string, int> MEASURE = create_measure_map();

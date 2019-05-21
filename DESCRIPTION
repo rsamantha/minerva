@@ -11,7 +11,7 @@ Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         "ctb", email = "jurman@fbk.eu"), person("Cesare", "Furlanello",
         role = "ctb", email = "furlan@fbk.eu"))
 Depends: R (>= 3.3.0)
-Imports: parallel, Rcpp, stats, graphics, utils
+Imports: parallel, Rcpp, stats, graphics
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: testthat
 Description: Wrapper for 'minepy' implementation of Maximal
