@@ -64,5 +64,5 @@ Davide Albanese, Michele Filosi, Roberto Visintainer, Samantha
 Riccadonna, Giuseppe Jurman and Cesare Furlanello. minerva and minepy:
 a C engine for the MINE suite and its R, Python and MATLAB
 wrappers. Bioinformatics (2013) 29(3): 407-408 first published online
-December 14, 2012 [doi:10.1093/bioinformatics/bts707](doi:10.1093/bioinformatics/bts707).
+December 14, 2012 [https://doi.org/10.1093/bioinformatics/bts707](https://doi.org/10.1093/bioinformatics/bts707).
 
