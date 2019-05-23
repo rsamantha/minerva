@@ -43,8 +43,10 @@ If n and m are the number of variables in X and Y respectively, then the
 and \code{tic[i, j]}.
 }
 \examples{
-x = matrix(rnorm(2560), ncol=8, nrow=320)
-y = matrix(rnorm(1280), ncol=4, nrow=320)
+x <- matrix(rnorm(2560), ncol=8, nrow=320)
+y <- matrix(rnorm(1280), ncol=4, nrow=320)
 
-mictic = cstats(x, y, alpha=9, C=5, est="mic_e")
+mictic <- cstats(x, y, alpha=9, C=5, est="mic_e")
+head(mictic)
+
 }

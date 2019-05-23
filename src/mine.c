@@ -58,13 +58,13 @@ void quicksort(double *a, int *idx, int l, int u)
         {
           ++m;
 
-      	  idx_temp = idx[m];
-      	  idx[m] = idx[i];
-      	  idx[i] = idx_temp;
+          idx_temp = idx[m];
+          idx[m] = idx[i];
+          idx[i] = idx_temp;
 
-      	  a_temp = a[m];
-      	  a[m] = a[i];
-      	  a[i] = a_temp;
+          a_temp = a[m];
+          a[m] = a[i];
+          a[i] = a_temp;
         }
     }
 
@@ -117,24 +117,27 @@ int *argsort(double *a, int n)
  *
  * Parameters
  *   cumhist : cumulative histogram matrix along P_map
+ *   cumhist_log : log(cumhist)
  *   q : number of rows of cumhist (number of partitions in Q_map)
  *   p : number of cols of cumhist (number of partitions in P_map)
  *   n : total number of points
  */
-double hq(int **cumhist, int q, int p, int n)
+double hq(int **cumhist, double **cumhist_log, int q, int p, int n)
 {
   int i;
-  double prob, H = 0.0;
+  double total, total_log, prob, prob_log, H = 0.0;
 
-  double total = (double) n;
+  total = (double) n;
+  total_log = log(total);
 
   for (i=0; i<q; i++)
     {
-      if (cumhist[i][p-1] != 0)
+      prob = (double) cumhist[i][p-1] / total;
+      if (prob != 0)
         {
-	        prob = (double) cumhist[i][p-1] / total;
-	        H -= prob * log(prob);
-	      }
+          prob_log = cumhist_log[i][p-1] - total_log;
+          H -= prob * prob_log;
+       }
     }
 
   return H;
@@ -146,35 +149,39 @@ double hq(int **cumhist, int q, int p, int n)
  *
  * Parameters
  *   c : c_1, ..., c_p
+ *   c_log : log(c)
  *   s : s in c_s
  *   t : t in c_t
  */
-double hp3(int *c, int s, int t)
+double hp3(int *c, double *c_log, int s, int t)
 {
   int sum;
-  double prob, H = 0.0;
-
-
-  double total = (double) c[t-1];
+  double total, total_log, prob, prob_log, H = 0.0;
 
   if (s == t)
     return 0.0;
 
-  if (c[s-1] != 0)
+  total = (double) c[t-1];
+  total_log = log(total);
+
+  prob = (double) c[s-1] / total;
+  if (prob != 0)
     {
-      prob = (double) c[s-1] / total;
-      H -= prob * log(prob);
+      prob_log = c_log[s-1] - total_log;
+      H -= prob * prob_log;
     }
 
   sum = c[t-1] - c[s-1];
+  prob = (double) sum / total;
   if (sum != 0)
     {
-      prob = (double) sum / total;
-      H -= prob * log(prob);
+      prob_log = log((double) sum) - total_log;
+      H -= prob * prob_log;
     }
 
   return H;
 }
+
 
 /*
  * Returns the entropy induced by the points on the partition
@@ -182,33 +189,38 @@ double hp3(int *c, int s, int t)
  *
  * Parameters
  *   cumhist : cumulative histogram matrix along P_map
+ *   cumhist_log : log(cumhist)
  *   c : c_1, ..., c_p
  *   q : number of rows of cumhist (number of partitions in Q_map)
  *   p : number of cols of cumhist (number of partitions in P_map)
  *   s : s in c_s
  *   t : t in c_t
  */
-double hp3q(int **cumhist, int *c, int q, int p, int s, int t)
+double hp3q(int **cumhist, double **cumhist_log, int *c, int q, int p, int s, int t)
 
 {
   int i, sum;
-  double prob, H = 0.0;
-  double total = (double) c[t-1];
+  double total, total_log, prob, prob_log, H = 0.0;
+
+  total = (double) c[t-1];
+  total_log = log(total);
 
   for (i=0; i<q; i++)
     {
-      if (cumhist[i][s-1] != 0)
+      prob = (double) cumhist[i][s-1] / total;
+      if (prob != 0)
         {
-	        prob = (double) cumhist[i][s-1] / total;
-	        H -= prob * log(prob);
-	      }
+          prob_log = cumhist_log[i][s-1] - total_log;
+          H -= prob * prob_log;
+        }
 
       sum = cumhist[i][t-1] - cumhist[i][s-1];
-      if (sum != 0)
+      prob = (double) sum / total;
+      if (prob != 0)
         {
-	        prob = (double) sum / total;
-	        H -= prob * log(prob);
-	      }
+          prob_log = log((double) sum) - total_log;
+          H -= prob * prob_log;
+        }
     }
 
   return H;
@@ -231,22 +243,23 @@ double hp3q(int **cumhist, int *c, int q, int p, int s, int t)
 double hp2q(int **cumhist, int *c, int q, int p, int s, int t)
 {
   int i, sum;
-  double prob, H = 0.0 ;
-
-
-  double total = (double) (c[t-1] - c[s-1]);
+  double total, total_log, prob, prob_log, H = 0.0 ;
 
   if (s == t)
     return 0.0;
 
+  total = (double) (c[t-1] - c[s-1]);
+  total_log = log(total);
+
   for (i=0; i<q; i++)
     {
       sum = cumhist[i][t-1] - cumhist[i][s-1];
-      if (sum != 0)
+      prob = (double) sum / total;
+      if (prob != 0)
         {
-	        prob = (double) sum / total;
-	        H -= prob * log(prob);
-	      }
+          prob_log = log((double) sum) - total_log;
+          H -= prob * prob_log;
+        }
     }
 
   return H;
@@ -282,26 +295,26 @@ int EquipartitionYAxis(double *dy, int n, int y, int *Q_map, int *q)
     {
       s = 1;
       for (j=i+1; j<n; j++)
-      	{
-      	  if (dy[i] == dy[j])
-      	    ++s;
-      	  else
-      	    break;
-      	}
+        {
+          if (dy[i] == dy[j])
+            ++s;
+          else
+            break;
+        }
 
       temp1 = fabs((double) h + (double) s - rowsize);
       temp2 = fabs((double) h - rowsize);
       if ((h != 0) && (temp1 >= temp2))
-      	{
-      	  ++curr;
-      	  h = 0;
-      	  temp1 = (double) n - (double) i;
-      	  temp2 = (double) y - (double) curr;
-      	  rowsize = temp1 / temp2;
-      	}
+        {
+          ++curr;
+          h = 0;
+          temp1 = (double) n - (double) i;
+          temp2 = (double) y - (double) curr;
+          rowsize = temp1 / temp2;
+        }
 
       for (j=0; j<s; j++)
-	       Q_map[i+j] = curr;
+         Q_map[i+j] = curr;
 
       i += s;
       h += s;
@@ -346,23 +359,23 @@ int GetClumpsPartition(double *dx, int n, int *Q_map, int *P_map, int *p)
       s = 1;
       flag = FALSE;
       for (j=i+1; j<n; j++)
-      	{
-      	  if (dx[i] == dx[j])
-      	    {
-      	      if (Q_tilde[i] != Q_tilde[j])
-      		      flag = TRUE;
-      	      ++s;
-      	    }
-      	  else
-      	    break;
-      	}
+        {
+          if (dx[i] == dx[j])
+            {
+              if (Q_tilde[i] != Q_tilde[j])
+                flag = TRUE;
+              ++s;
+            }
+          else
+            break;
+        }
 
       if ((s > 1) && (flag == TRUE))
-      	{
-      	  for (j=0; j<s; j++)
-      	    Q_tilde[i+j] = c;
-      	  --c;
-      	}
+        {
+          for (j=0; j<s; j++)
+            Q_tilde[i+j] = c;
+          --c;
+        }
 
       i += s;
     }
@@ -372,7 +385,7 @@ int GetClumpsPartition(double *dx, int n, int *Q_map, int *P_map, int *p)
   for (j=1; j<n; j++)
     {
       if (Q_tilde[j] != Q_tilde[j-1])
-	      ++i;
+        ++i;
       P_map[j] = i;
     }
 
@@ -414,10 +427,10 @@ int GetSuperclumpsPartition(double *dx, int n, int k_hat, int *Q_map,
     {
       dp = (double *) malloc (n * sizeof(double));
       if (dp == NULL)
-	      return 1;
+        return 1;
 
       for (i=0; i<n; i++)
-	      dp[i] = (double) P_map[i];
+        dp[i] = (double) P_map[i];
 
       EquipartitionYAxis(dp, n, k_hat, P_map, p);
 
@@ -452,6 +465,25 @@ int *compute_c(int *P_map, int p, int n)
 }
 
 
+double *compute_c_log(int *c, int p)
+{
+  int i;
+  double *c_log;
+
+  c_log = (double *) malloc (p * sizeof(double));
+  if (c_log == NULL)
+    return NULL;
+
+  for (i=0; i<p; i++)
+    if (c[i] != 0)
+      c_log[i] = log((double) c[i]);
+    else
+      c_log[i] = 0;
+
+  return c_log;
+}
+
+
 /* Returns the cumulative histogram matrix along P_map */
 int **compute_cumhist(int *Q_map, int q, int *P_map, int p, int n)
 {
@@ -467,16 +499,16 @@ int **compute_cumhist(int *Q_map, int q, int *P_map, int p, int n)
     {
       cumhist[i] = (int *) malloc (p * sizeof(int));
       if (cumhist[i] == NULL)
-      	{
-      	  for (j=0; j<i; j++)
-      	    free(cumhist[j]);
+        {
+          for (j=0; j<i; j++)
+            free(cumhist[j]);
 
           free(cumhist);
-      	  return NULL;
-      	}
+          return NULL;
+        }
 
       for (j=0; j<p; j++)
-	      cumhist[i][j] = 0;
+        cumhist[i][j] = 0;
     }
 
   for (i=0; i<n; i++)
@@ -487,6 +519,38 @@ int **compute_cumhist(int *Q_map, int q, int *P_map, int p, int n)
       cumhist[i][j] += cumhist[i][j-1];
 
   return cumhist;
+}
+
+
+double ** compute_cumhist_log(int **cumhist, int q, int p)
+{
+  int i, j;
+  double **cumhist_log;
+
+  cumhist_log = (double **) malloc (q * sizeof(double *));
+  if (cumhist_log == NULL)
+    return NULL;
+
+  for (i=0; i<q; i++)
+    {
+      cumhist_log[i] = (double *) malloc (p * sizeof(double));
+      if (cumhist_log[i] == NULL)
+        {
+          for (j=0; j<i; j++)
+            free(cumhist_log[j]);
+
+          free(cumhist_log);
+          return NULL;
+        }
+
+      for (j=0; j<p; j++)
+        if (cumhist[i][j] != 0)
+          cumhist_log[i][j] = log((double) cumhist[i][j]);
+        else
+          cumhist_log[i][j] = 0;
+    }
+
+    return cumhist_log;
 }
 
 
@@ -505,15 +569,15 @@ double **init_I(int p, int x)
     {
       I[i] = (double *) malloc ((x+1) * sizeof(double));
       if (I[i] == NULL)
-      	{
-      	  for (j=0; j<i; j++)
-      	    free(I[j]);
-      	  free(I);
-      	  return NULL;
-      	}
+        {
+          for (j=0; j<i; j++)
+            free(I[j]);
+          free(I);
+          return NULL;
+        }
 
       for (j=0; j<=x; j++)
-	      I[i][j] = 0.0;
+        I[i][j] = 0.0;
     }
 
   return I;
@@ -535,12 +599,12 @@ double **compute_HP2Q(int **cumhist, int*c, int q, int p)
     {
       HP2Q[i] = (double *) malloc ((p+1) * sizeof(double));
       if (HP2Q[i] == NULL)
-      	{
-      	  for (j=0; j<i; j++)
-      	    free(HP2Q[j]);
-      	  free(HP2Q);
-      	  return NULL;
-      	}
+        {
+          for (j=0; j<i; j++)
+            free(HP2Q[j]);
+          free(HP2Q);
+          return NULL;
+        }
     }
 
   for (t=3; t<=p; t++)
@@ -549,6 +613,7 @@ double **compute_HP2Q(int **cumhist, int*c, int q, int p)
 
   return HP2Q;
 }
+
 
 /*
  * Returns the normalized MI scores.
@@ -570,20 +635,20 @@ double **compute_HP2Q(int **cumhist, int*c, int q, int p)
  *   0 on success, 1 if an error occurs
  */
 int OptimizeXAxis(double *dx, double *dy, int n, int *Q_map, int q,
-		  int *P_map, int p, int x, double *score)
+      int *P_map, int p, int x, double *score)
 {
   int i, s, t, l;
   int *c;
   int **cumhist;
   double **I, **HP2Q;
   double F, F_max, HQ, ct, cs;
-
+  double **cumhist_log, *c_log;
 
   /* return score=0 if p=1 */
   if (p == 1)
     {
       for (i=0; i<x-1; i++)
-	      score[i] = 0.0;
+        score[i] = 0.0;
       return 0;
     }
 
@@ -592,11 +657,21 @@ int OptimizeXAxis(double *dx, double *dy, int n, int *Q_map, int q,
   if (c == NULL)
     goto error_c;
 
+  /* precompute log(c) (log(c)=0 when c=0) */
+  c_log = compute_c_log(c, p);
+  if (c_log == NULL)
+    goto error_c_log;
+
   /* compute the cumulative histogram matrix along P_map */
   cumhist = compute_cumhist(Q_map, q, P_map, p, n);
   if (cumhist == NULL)
     goto error_cumhist;
 
+  /* precompute log(cumhist) (log(cumhist)=0 when cumhist=0) */
+  cumhist_log = compute_cumhist_log(cumhist, q, p);
+  if (cumhist == NULL)
+    goto error_cumhist_log;
+  
   /* I matrix initialization */
   I = init_I(p, x);
   if (I == NULL)
@@ -608,21 +683,21 @@ int OptimizeXAxis(double *dx, double *dy, int n, int *Q_map, int q,
     goto error_HP2Q;
 
   /* compute H(Q) */
-  HQ = hq(cumhist, q, p, n);
+  HQ = hq(cumhist, cumhist_log, q, p, n);
 
   /* Find the optimal partitions of size 2, Algorithm 2 in SOM, lines 3-8 */
   for (t=2; t<=p; t++)
     {
       F_max = -DBL_MAX;
       for (s=1; s<=t; s++)
-      	{
-      	  F = hp3(c, s, t) - hp3q(cumhist, c, q, p, s, t);
-      	  if (F > F_max)
-      	    {
-      	      I[t][2] = HQ + F;
-      	      F_max = F;
-      	    }
-      	}
+        {
+          F = hp3(c, c_log, s, t) - hp3q(cumhist, cumhist_log, c, q, p, s, t);
+          if (F > F_max)
+            {
+              I[t][2] = HQ + F;
+              F_max = F;
+            }
+        }
     }
 
   /*
@@ -632,20 +707,20 @@ int OptimizeXAxis(double *dx, double *dy, int n, int *Q_map, int q,
   for (l=3; l<=x; l++)
     {
       for (t=l; t<=p; t++)
-      	{
-      	  ct = (double) c[t-1];
-      	  F_max = -DBL_MAX;
-      	  for (s=l-1; s<=t; s++)
-      	    {
-      	      cs = (double) c[s-1];
-      	      F = ((cs/ct) * (I[s][l-1]-HQ)) - (((ct-cs)/ct) * HP2Q[s][t]);
+        {
+          ct = (double) c[t-1];
+          F_max = -DBL_MAX;
+          for (s=l-1; s<=t; s++)
+            {
+              cs = (double) c[s-1];
+              F = ((cs/ct) * (I[s][l-1]-HQ)) - (((ct-cs)/ct) * HP2Q[s][t]);
 
-      	      if (F > F_max)
-            		{
-            		  I[t][l] = HQ + F;
-            		  F_max = F;
-            		}
-      	    }
+              if (F > F_max)
+                {
+                  I[t][l] = HQ + F;
+                  F_max = F;
+                }
+            }
         }
     }
 
@@ -667,9 +742,14 @@ int OptimizeXAxis(double *dx, double *dy, int n, int *Q_map, int q,
   free(I);
 
   for (i=0; i<q; i++)
+    free(cumhist_log[i]);
+  free(cumhist_log);
+
+  for (i=0; i<q; i++)
     free(cumhist[i]);
   free(cumhist);
 
+  free(c_log);
   free (c);
   /* end frees */
 
@@ -682,9 +762,15 @@ int OptimizeXAxis(double *dx, double *dy, int n, int *Q_map, int q,
     free(I);
   error_I:
     for (i=0; i<q; i++)
+      free(cumhist_log[i]);
+    free(cumhist_log);
+  error_cumhist_log: 
+    for (i=0; i<q; i++)
       free(cumhist[i]);
     free(cumhist);
   error_cumhist:
+    free(c_log);
+  error_c_log:
     free(c);
   error_c:
     return 1;
@@ -728,11 +814,11 @@ mine_score *init_score(mine_problem *prob, mine_parameter *param)
     {
       score->M[i] = (double *) malloc ((score->m[i]) * sizeof(double));
       if (score->M[i] == NULL)
-      	{
-      	  for (j=0; j<i; j++)
-      	    free(score->M[j]);
-      	  goto error_score_M_i;
-      	}
+        {
+          for (j=0; j<i; j++)
+            free(score->M[j]);
+          goto error_score_M_i;
+        }
     }
 
   return score;
@@ -817,26 +903,26 @@ mine_score *mine_compute_score(mine_problem *prob, mine_parameter *param)
 
       ret = EquipartitionYAxis(yy, prob->n, i+2, Q_map, &q);
       if (ret)
-  	    goto error_0;
+        goto error_0;
 
       /* sort Q by x */
       for (j=0; j<prob->n; j++)
-  	    Q_map_temp[iy[j]] = Q_map[j];
+        Q_map_temp[iy[j]] = Q_map[j];
       for (j=0; j<prob->n; j++)
-  	    Q_map[j] = Q_map_temp[ix[j]];
+        Q_map[j] = Q_map_temp[ix[j]];
 
       ret = GetSuperclumpsPartition(xx, prob->n, k, Q_map, P_map, &p);
       if (ret)
-  	    goto error_0;
+        goto error_0;
 
       if (param->est == EST_MIC_APPROX)
-  	    ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p, score->m[i]+1,
+        ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p, score->m[i]+1,
                             score->M[i]);
       else /* EST_MIC_E */
-  	    ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p,
-  			                    MIN(i+2, score->m[i]+1), score->M[i]);
+        ret = OptimizeXAxis(xx, yx, prob->n, Q_map, q, P_map, p,
+                            MIN(i+2, score->m[i]+1), score->M[i]);
       if (ret)
-  	    goto error_0;
+        goto error_0;
     }
 
   /* y vs. x */
@@ -846,34 +932,34 @@ mine_score *mine_compute_score(mine_problem *prob, mine_parameter *param)
 
       ret = EquipartitionYAxis(xx, prob->n, i+2, Q_map, &q);
       if (ret)
-  	    goto error_0;
+        goto error_0;
 
       /* sort Q by y */
       for (j=0; j<prob->n; j++)
-  	    Q_map_temp[ix[j]] = Q_map[j];
+        Q_map_temp[ix[j]] = Q_map[j];
       for (j=0; j<prob->n; j++)
-  	    Q_map[j] = Q_map_temp[iy[j]];
+        Q_map[j] = Q_map_temp[iy[j]];
 
       ret = GetSuperclumpsPartition(yy, prob->n, k, Q_map, P_map, &p);
       if (ret)
-  	    goto error_0;
+        goto error_0;
 
       if (param->est == EST_MIC_APPROX)
-  	    ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p, score->m[i]+1,
+        ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p, score->m[i]+1,
                             M_temp);
       else /* EST_MIC_E */
-  	    ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p,
-  			                    MIN(i+2, score->m[i]+1), M_temp);
+        ret = OptimizeXAxis(yy, xy, prob->n, Q_map, q, P_map, p,
+                            MIN(i+2, score->m[i]+1), M_temp);
 
       if (ret)
-  	    goto error_0;
+        goto error_0;
 
       if (param->est == EST_MIC_APPROX)
-  	    for (j=0; j<score->m[i]; j++)
-  	      score->M[j][i] = MAX(M_temp[j], score->M[j][i]);
+        for (j=0; j<score->m[i]; j++)
+          score->M[j][i] = MAX(M_temp[j], score->M[j][i]);
       else /* EST_MIC_E */
-  	    for (j=0; j<MIN(i+1, score->m[i]); j++)
-  	      score->M[j][i] = M_temp[j];
+        for (j=0; j<MIN(i+1, score->m[i]); j++)
+          score->M[j][i] = M_temp[j];
     }
 
   free(M_temp);
@@ -945,7 +1031,7 @@ double mine_mic(mine_score *score)
   for (i=0; i<score->n; i++)
     for (j=0; j<score->m[i]; j++)
       if (score->M[i][j] > score_max)
-	      score_max = score->M[i][j];
+        score_max = score->M[i][j];
 
   return score_max;
 }
@@ -961,9 +1047,9 @@ double mine_mas(mine_score *score)
   for (i=0; i<score->n; i++)
     for (j=0; j<score->m[i]; j++)
       {
-      	score_curr = fabs(score->M[i][j] - score->M[j][i]);
-      	if (score_curr > score_max)
-      	  score_max = score_curr;
+        score_curr = fabs(score->M[i][j] - score->M[j][i]);
+        if (score_curr > score_max)
+          score_max = score_curr;
       }
 
   return score_max;
@@ -979,7 +1065,7 @@ double mine_mev(mine_score *score)
   for (i=0; i<score->n; i++)
     for (j=0; j<score->m[i]; j++)
       if (((j==0) || (i==0)) && score->M[i][j] > score_max)
-	      score_max = score->M[i][j];
+        score_max = score->M[i][j];
 
   return score_max;
 }
@@ -997,10 +1083,10 @@ double mine_mcn(mine_score *score, double eps)
   for (i=0; i<score->n; i++)
     for (j=0; j<score->m[i]; j++)
       {
-      	log_xy = log((i+2) * (j+2)) / log(2.0);
-      	if (((score->M[i][j]+delta) >= ((1.0 - eps) * mic))
+        log_xy = log((i+2) * (j+2)) / log(2.0);
+        if (((score->M[i][j]+delta) >= ((1.0 - eps) * mic))
              && (log_xy < score_min))
-      	  score_min = log_xy;
+          score_min = log_xy;
       }
 
   return score_min;
@@ -1019,9 +1105,9 @@ double mine_mcn_general(mine_score *score)
   for (i=0; i<score->n; i++)
     for (j=0; j<score->m[i]; j++)
       {
-      	log_xy = log((i+2) * (j+2)) / log(2.0);
-      	if (((score->M[i][j]+delta) >= (mic * mic)) && (log_xy < score_min))
-      	  score_min = log_xy;
+        log_xy = log((i+2) * (j+2)) / log(2.0);
+        if (((score->M[i][j]+delta) >= (mic * mic)) && (log_xy < score_min))
+          score_min = log_xy;
       }
 
   return score_min;
@@ -1076,13 +1162,13 @@ double mine_gmic(mine_score *score, double p)
     for (j=0; j<score->m[i]; j++)
       {
         B = (i+2) * (j+2);
-      	score_sub->n = MAX((int) floor(B/2.0), 2) - 1;
-      	score_sub->m = (int *) malloc(score_sub->n * sizeof(int));
-      	for (k=0; k<score_sub->n; k++)
-      	  score_sub->m[k] = (int) floor((double) B / (double) (k+2)) - 1;
+        score_sub->n = MAX((int) floor(B/2.0), 2) - 1;
+        score_sub->m = (int *) malloc(score_sub->n * sizeof(int));
+        for (k=0; k<score_sub->n; k++)
+          score_sub->m[k] = (int) floor((double) B / (double) (k+2)) - 1;
 
-      	C_star->M[i][j] = mine_mic(score_sub);
-      	free(score_sub->m);
+        C_star->M[i][j] = mine_mic(score_sub);
+        free(score_sub->m);
       }
 
   /* p=0 -> geometric mean */
@@ -1091,11 +1177,11 @@ double mine_gmic(mine_score *score, double p)
       Z = 0;
       gmic = 1.0;
       for (i=0; i<C_star->n; i++)
-      	for (j=0; j<C_star->m[i]; j++)
-      	  {
-      	    gmic *= C_star->M[i][j];
-      	    Z++;
-      	  }
+        for (j=0; j<C_star->m[i]; j++)
+          {
+            gmic *= C_star->M[i][j];
+            Z++;
+          }
       gmic = pow(gmic, (double) Z);
     }
   /* p!=0 -> generalized mean */
@@ -1104,11 +1190,11 @@ double mine_gmic(mine_score *score, double p)
       Z = 0;
       gmic = 0.0;
       for (i=0; i<C_star->n; i++)
-	      for (j=0; j<C_star->m[i]; j++)
-      	  {
-      	    gmic += pow(C_star->M[i][j], p);
-      	    Z++;
-      	  }
+        for (j=0; j<C_star->m[i]; j++)
+          {
+            gmic += pow(C_star->M[i][j], p);
+            Z++;
+          }
       gmic /= (double) Z;
       gmic = pow(gmic, 1.0/p);
     }
@@ -1118,7 +1204,7 @@ double mine_gmic(mine_score *score, double p)
     {
       free(C_star->m);
       for (i=0; i<C_star->n; i++)
- 	      free(C_star->M[i]);
+         free(C_star->M[i]);
       free(C_star->M);
     }
   free(C_star);
@@ -1135,12 +1221,12 @@ void mine_free_score(mine_score **score)
   if (score_ptr != NULL)
     {
       if (score_ptr->n != 0)
-      	{
-      	  free(score_ptr->m);
-      	  for (i=0; i<score_ptr->n; i++)
-      	    free(score_ptr->M[i]);
-      	  free(score_ptr->M);
-      	}
+        {
+          free(score_ptr->m);
+          for (i=0; i<score_ptr->n; i++)
+            free(score_ptr->M[i]);
+          free(score_ptr->M);
+        }
 
       free(score_ptr);
       score_ptr = NULL;
@@ -1158,8 +1244,8 @@ mine_pstats *mine_compute_pstats(mine_matrix *X, mine_parameter *param)
   /* Allocate memory for stats */
   stats = (mine_pstats *) malloc(sizeof(mine_pstats));
   stats->n = (X->n * (X->n-1)) / 2;
-  stats->mic = (double *) malloc(stats->n * sizeof(double *));
-  stats->tic = (double *) malloc(stats->n * sizeof(double *));
+  stats->mic = (double *) malloc(stats->n * sizeof(double));
+  stats->tic = (double *) malloc(stats->n * sizeof(double));
 
   k = 0;
   prob.n = X->m;
@@ -1197,8 +1283,8 @@ mine_cstats *mine_compute_cstats(mine_matrix *X, mine_matrix *Y,
   stats = (mine_cstats *) malloc(sizeof(mine_cstats));
   stats->n = X->n;
   stats->m = Y->n;
-  stats->mic = (double *) malloc((stats->n * stats->m) * sizeof(double *));
-  stats->tic = (double *) malloc((stats->n * stats->m) * sizeof(double *));
+  stats->mic = (double *) malloc((stats->n * stats->m) * sizeof(double));
+  stats->tic = (double *) malloc((stats->n * stats->m) * sizeof(double));
 
   k = 0;
   prob.n = X->m;

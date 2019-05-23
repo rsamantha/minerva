@@ -75,10 +75,12 @@ pstats <- function(x, alpha = 0.6, C = 15, est = "mic_approx") {
 #' MIC: the MIC statistic matrix (n x p).
 #' TIC: the normalized TIC statistic matrix (n x p).
 #' @examples
-#' x = matrix(rnorm(2560), ncol=8, nrow=320)
-#' y = matrix(rnorm(1280), ncol=4, nrow=320)
+#' x <- matrix(rnorm(2560), ncol=8, nrow=320)
+#' y <- matrix(rnorm(1280), ncol=4, nrow=320)
 #' 
-#' mictic = cstats(x, y, alpha=9, C=5, est="mic_e")
+#' mictic <- cstats(x, y, alpha=9, C=5, est="mic_e")
+#' head(mictic)
+#' 
 #' @export
 cstats <- function(x, y, alpha = 0.6, C = 15, est = "mic_approx") {
     .Call('_minerva_cstats', PACKAGE = 'minerva', x, y, alpha, C, est)

@@ -101,7 +101,7 @@ test_that("mic_strength high correlation == 1",{
   mydata <- matrix(rep(1:10, 4), ncol=4, nrow=10) + matrix(rep((0:3), each=10), ncol=4, nrow=10)
   rr <- mictools(mydata, nperm=100, seed=10)
   ms <- mic_strength(mydata, pval=rr$pval, pval.col=c(6, 2, 3))
-  expect_equal(all(ms$MIC == 1), TRUE)
+  expect_equal(ms$MIC-1, rep(0, nrow(ms)), tolerance=1e-10)
 })
 
 

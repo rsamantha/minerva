@@ -79,9 +79,9 @@ mine_matrix *rMattomine(NumericMatrix x)
 // [[Rcpp::export]]
 double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15, String est="mic_approx", String measure="mic", double eps=0.0, double p=-1, bool norm=false)
 {
-  mine_problem *prob;
+  mine_problem prob;
   mine_score *minescore;
-  mine_parameter *param;
+  mine_parameter param;
   char  *err;
   double res;
   int m, lest;
@@ -91,13 +91,13 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   m = switch_measure(measure);
   
   /* Allocate parameter class */
-  param = (mine_parameter *) Calloc(1,mine_parameter);
-  param->alpha=alpha;
-  param->c=C;
-  param->est=lest;
+  // param = (mine_parameter *) Calloc(1,mine_parameter);
+  param.alpha=alpha;
+  param.c=C;
+  param.est=lest;
   
   /* Check parameteres for MINE statistic */
-  err = mine_check_parameter(param);
+  err = mine_check_parameter(&param);
   if (err)
     stop(err);
   
@@ -106,13 +106,13 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
     stop("Not conformable arrays!");
   
   /* Allocate problem structure for MINE */
-  prob = (mine_problem *) Calloc(1,mine_problem);
-  prob->n=x.size();
-  prob->x=REAL(x);
-  prob->y=REAL(y);
+  // prob = (mine_problem *) Calloc(1,mine_problem);
+  prob.n=x.size();
+  prob.x=x.begin();
+  prob.y=y.begin();
   
   /* Compute MIC score */
-  minescore = mine_compute_score(prob, param);
+  minescore = mine_compute_score(&prob, &param);
   
   /* Check eps for MCN */
   err = check_eps(eps);
@@ -146,9 +146,7 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   
   /* Free memory */
   mine_free_score(&minescore);
-  Free(param);
-  Free(prob);
-  
+
   return(res);
 }
 
@@ -179,7 +177,7 @@ NumericMatrix pstats(NumericMatrix x, double alpha=0.6, double C=15, String est=
 {
   mine_parameter param;
   mine_matrix mmat;
-  mine_pstats *pstats;
+  mine_pstats *pstatscore;
   int i, j;
   int k=0;
   int nr=x.nrow();
@@ -191,6 +189,7 @@ NumericMatrix pstats(NumericMatrix x, double alpha=0.6, double C=15, String est=
   lest = switch_est(est);
   
   /* Allocate parameters for computation */
+  // param = (mine_parameter *) Calloc(1,mine_parameter);
   param.alpha=alpha;
   param.c=C; 
   param.est=lest;
@@ -201,18 +200,19 @@ NumericMatrix pstats(NumericMatrix x, double alpha=0.6, double C=15, String est=
     stop(err);
   
   /*Prepare data structure */
+  // mmat = (mine_matrix *) Calloc (1, mine_matrix);
   mmat.data = x.begin();
   mmat.m = nr;
   mmat.n = nc;
   
-  pstats = mine_compute_pstats(&mmat, &param);
+  pstatscore = mine_compute_pstats(&mmat, &param);
   
-  NumericMatrix mres(pstats->n, 4);
-  for (i=0; i<pstats->n; i++)
+  NumericMatrix mres(pstatscore->n, 4);
+  for (i=0; i<pstatscore->n; i++)
   {
     // Rcout << pstats->mic[i] << std::endl; 
-    mres(i,2) = pstats->mic[i];
-    mres(i,3) = pstats->tic[i];
+    mres(i,2) = pstatscore->mic[i];
+    mres(i,3) = pstatscore->tic[i];
   }
   
   /* Fill index of variable computed 1-based*/
@@ -229,11 +229,6 @@ NumericMatrix pstats(NumericMatrix x, double alpha=0.6, double C=15, String est=
   /* Set colnames of the matrix */
   StringVector resnames = StringVector::create("Var1", "Var2", "MIC", "TIC");
   colnames(mres) = resnames;
-  
-  /* Free used memory */
-  free(pstats->mic);
-  free(pstats->tic);
-  free(pstats);
   
   return(mres);
 }
@@ -262,10 +257,12 @@ NumericMatrix pstats(NumericMatrix x, double alpha=0.6, double C=15, String est=
 //' MIC: the MIC statistic matrix (n x p).
 //' TIC: the normalized TIC statistic matrix (n x p).
 //' @examples
-//' x = matrix(rnorm(2560), ncol=8, nrow=320)
-//' y = matrix(rnorm(1280), ncol=4, nrow=320)
+//' x <- matrix(rnorm(2560), ncol=8, nrow=320)
+//' y <- matrix(rnorm(1280), ncol=4, nrow=320)
 //' 
-//' mictic = cstats(x, y, alpha=9, C=5, est="mic_e")
+//' mictic <- cstats(x, y, alpha=9, C=5, est="mic_e")
+//' head(mictic)
+//' 
 //' @export
 // [[Rcpp::export]]
 NumericMatrix cstats(NumericMatrix x, NumericMatrix y, double alpha=0.6, double C=15, String est="mic_approx")
@@ -315,7 +312,6 @@ NumericMatrix cstats(NumericMatrix x, NumericMatrix y, double alpha=0.6, double 
       rres(i, 2) = cres->mic[i];
       rres(i, 3) = cres->tic[i];
     }
-  
    
   /* Fill Indices */
   l = 0;
@@ -332,10 +328,6 @@ NumericMatrix cstats(NumericMatrix x, NumericMatrix y, double alpha=0.6, double 
   StringVector resnames = StringVector::create("VarX", "VarY", "MIC", "TIC");
   colnames(rres) = resnames;
   
-  /* Free */
-  free(cres->mic);
-  free(cres->tic);
-  free(cres);
   return(rres);
 }
 
