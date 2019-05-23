@@ -1,6 +1,6 @@
 Package: minerva
 Version: 1.5.7
-Date: 2019-05-22
+Date: 2019-05-23
 Title: Maximal Information-Based Nonparametric Exploration for Variable Analysis
 Authors@R: c(person("Michele", "Filosi", role = c("aut","cre" ), email
         = "michele.filosi@gmail.com"), person("Roberto", "Visintainer", role =
@@ -20,7 +20,7 @@ Description: Wrapper for 'minepy' implementation of Maximal
 	'minepy' can be found at <http://minepy.readthedocs.io/en/latest>.
 URL: https://www.r-project.org, http://minepy.readthedocs.io/en/latest, http://www.exploredata.net
 License: GPL-3
-Packaged: 2018-12-04
+Packaged: 2019-05-23
 Author: Michele Filosi [aut, cre], Roberto Visintainer [aut], Davide
         Albanese [aut], Samantha Riccadonna [ctb], Giuseppe Jurman
         [ctb], Cesare Furlanello [ctb]

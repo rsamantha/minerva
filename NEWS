@@ -1,3 +1,9 @@
+V. 1.5.7
+------
+- Included new versione of libmine
+- Solved memory allocation issue causing i386 system error
+- Improve memory handling R interface
+
 V. 1.5.4
 ------
 - Added function for the mictools pipeline
