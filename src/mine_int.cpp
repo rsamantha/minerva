@@ -85,7 +85,8 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   char  *err;
   double res;
   int m, lest;
-
+  // int nnorm = norm==true;
+  
   /* Convert measure and est parameter */
   lest = switch_est(est);
   m = switch_measure(measure);
@@ -116,7 +117,7 @@ double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15
   
   /* Check eps for MCN */
   err = check_eps(eps);
-
+  
   /* Switch between measure to return */
   switch(m){
   case 1: res = mine_mic(minescore);

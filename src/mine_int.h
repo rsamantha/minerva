@@ -7,7 +7,7 @@ const std::map<std::string, int> create_measure_map()
   MEASURE["mas"]=2;
   MEASURE["mev"]=3;
   MEASURE["mcn"]=4;
-  MEASURE["tic"]=6;
+  MEASURE["tic"]=5;
   MEASURE["gmic"]=6;
 
   return MEASURE;
