@@ -6,7 +6,7 @@
 It take two vectors of the same dimension as an input.}
 \usage{
 mine_stat(x, y, alpha = 0.6, C = 15, est = "mic_approx",
-  measure = "mic", eps = 0, p = -1, norm = FALSE)
+  measure = "mic", eps = NA_real_, p = -1, norm = FALSE)
 }
 \arguments{
 \item{x}{Numeric Vector of size \code{n}}
@@ -20,7 +20,9 @@ mine_stat(x, y, alpha = 0.6, C = 15, est = "mic_approx",
 \item{est}{character estimation parameter for the mine statistic.
 Possible values are \code{"mic_approx"} or \code{"mic_e"}}
 
-\item{measure}{integer indicating which measure to return}
+\item{measure}{integer indicating which measure to return
+available measures are: \code{mic, mas, mev, mcn, tic, gmic}. The string could be also uppercase.
+For measure \code{mic-r2} see details.}
 
 \item{eps}{eps value for MCN statistic should be in (0,1). If NA is passed then the normal MCN statistic is returned.}
 
@@ -36,10 +38,21 @@ It take two vectors of the same dimension as an input.
 This is a wrapper function to compute the mine statistic between two variables.
 for more details on the available measure and the meaning of the other parameters see also the 
 documentation for the \code{\link[minerva]{mine}} function.
+
+For measure \code{mic-r2} use the Pearson R coefficient score \code{\link[stats]{cor}} and the measure \code{mic}. 
+See the example below.
 }
 \examples{
 x <- runif(10); y <- 3*x+2;
 mine_stat(x,y, measure="mic")
+
+## Measure mic-r2
+x <- matrix(rnorm(20), ncol=2, nrow=10)
+mmic <- mine_stat(x[,1], x[,2], measure="mic")
+r2 <- cor(x[,1], x[,2])
+
+mmic - r2**2
+
 }
 \seealso{
 \code{\link[minerva]{mine}}

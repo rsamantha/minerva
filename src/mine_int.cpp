@@ -1,19 +1,53 @@
 #include <RcppArmadilloExtensions/sample.h>
 #include <Rcpp.h>
+#include <limits>
 #include <map>
 #include "mine.h"
 #include "mine_int.h"
 
 /* DEFINE CONSTANT MAPS FOR MEASURE AND EST */
-const std::map<std::string, int> MEASURE = create_measure_map();
-  //({{"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6}});
-const std::map<std::string, int> EST = create_est_map();
+//const std::map<std::string, int> MEASURE=create_measure_map();
+//({{"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6}});
+//const std::map<std::string, int> EST=create_est_map();
 //({{"mic_approx", 0}, {"mic_e", 1}});
+
+
+const std::map<std::string, int> create_measure_map()
+{
+  std::map<std::string, int> MEASURE;
+  // {{"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6}}
+  MEASURE["mic"]=1;
+  MEASURE["mas"]=2;
+  MEASURE["mev"]=3;
+  MEASURE["mcn"]=4;
+  MEASURE["tic"]=5;
+  MEASURE["gmic"]=6;
+  MEASURE["MIC"]=1;
+  MEASURE["MAS"]=2;
+  MEASURE["MEV"]=3;
+  MEASURE["MCN"]=4;
+  MEASURE["TIC"]=5;
+  MEASURE["GMIC"]=6;
+  
+  return(MEASURE);
+}
+
+const std::map<std::string, int> create_est_map()
+{
+  std::map<std::string, int> EST;
+  EST["mic_approx"]=0;
+  EST["mic_e"]=1;
+  
+  return(EST);
+}
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
 using namespace Rcpp;
 
+/* Switch between available measure :
+ * mic; mas; mev; mcn; tic; gmic
+ */
 int switch_measure(String measure)
 {
   int res=0;
@@ -24,6 +58,10 @@ int switch_measure(String measure)
   return(res);
 }
 
+/* Switch between possible estimators 
+ * est = 0 -> est = 'mic_approx'
+ * est = 1 -> est = 'mic_e'
+ */
 int switch_est(String est)
 {
   int res = -1;
@@ -34,6 +72,9 @@ int switch_est(String est)
   return(res);
 }
 
+/* Handle eps parameter 
+ * if eps not in (0, 1) throws an error...
+ */
 char *check_eps(double eps)
 {
   if ((eps < 0.0) | (eps > 1.0))
@@ -42,7 +83,10 @@ char *check_eps(double eps)
   return NULL;
 }
 
-/* Helper funtion to convert from R Matrix to mine_matrix structure */
+/* Helper funtion to convert from R Matrix to mine_matrix structure
+ * Not needed anymore. All the computation handled by pointers 
+ * between R memory and C memory
+ */ 
 mine_matrix *rMattomine(NumericMatrix x)
 {
   mine_matrix *X;
@@ -65,20 +109,34 @@ mine_matrix *rMattomine(NumericMatrix x)
 //' @param est character estimation parameter for the mine statistic.
 //' Possible values are \code{"mic_approx"} or \code{"mic_e"}
 //' @param measure integer indicating which measure to return
+//' available measures are: \code{mic, mas, mev, mcn, tic, gmic}. The string could be also uppercase.
+//' For measure \code{mic-r2} see details.
 //' @param eps eps value for MCN statistic should be in (0,1). If NA is passed then the normal MCN statistic is returned.
 //' @param p probability for the generalized mic
 //' @param norm boolean if require normalization between 0 and 1 for the \code{tic} statistic
 //' @details This is a wrapper function to compute the mine statistic between two variables.
 //' for more details on the available measure and the meaning of the other parameters see also the 
 //' documentation for the \code{\link[minerva]{mine}} function.
+//'
+//' For measure \code{mic-r2} use the Pearson R coefficient score \code{\link[stats]{cor}} and the measure \code{mic}. 
+//' See the example below.
 //' @seealso \code{\link[minerva]{mine}}
 //' @examples 
 //' x <- runif(10); y <- 3*x+2;
 //' mine_stat(x,y, measure="mic")
+//' 
+//' ## Measure mic-r2
+//' x <- matrix(rnorm(20), ncol=2, nrow=10)
+//' mmic <- mine_stat(x[,1], x[,2], measure="mic")
+//' r2 <- cor(x[,1], x[,2])
+//' 
+//' mmic - r2**2
+//' 
 //' @export
 // [[Rcpp::export]]
-double mine_stat(NumericVector x, NumericVector y, double alpha=0.6, double C=15, String est="mic_approx", String measure="mic", double eps=0.0, double p=-1, bool norm=false)
+double mine_stat(NumericVector x, NumericVector y, double alpha =0.6, double C=15, String est="mic_approx", String measure="mic", double eps=NA_REAL, double p=-1, bool norm=false)
 {
+  
   mine_problem prob;
   mine_score *minescore;
   mine_parameter param;

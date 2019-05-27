@@ -114,6 +114,29 @@ test_that("Test rcpp interface:", {
   expect_equal(mm$MIC, mm2, tolerance=1e-6)
 })
 
+test_that("Test mineRonevar:", {
+  x <- matrix(rnorm(320*8), nrow=320, ncol=8)
+  m1 <- mine(x[, 1], x[, 2], n.cores=1, alpha=0.6, C=15, normalization=TRUE)
+  mmes <- c("mic", "mas", "mev", "mcn", "mic-r2", "gmic", "tic")
+  m2 <- sapply(mmes, function(y, data){
+    if(y != "mic-r2"){
+      res <- mine_stat(data[,1], data[, 2], measure=y, alpha=0.6, C=15, norm=TRUE)
+    } else {
+      r2 <- cor(data[,1], data[, 2]) ** 2
+      res <- mine_stat(data[,1], data[, 2], measure="mic", alpha=0.6, C=15, norm=TRUE) - r2
+    }
+    return(res)
+  }, data=x)
+
+  expect_equal(length(m1), length(m2))
+  for (i in 1:length(m1))
+  {
+    expect_equal(m1[[i]], m2[[i]], tolerance=1e-10)
+  }
+  
+})
+
+
 test_that("Test measure consistency:", {
   x <- matrix(rnorm(320*8), nrow=320, ncol=8)
   m1 <- mine(x[, 1], x[, 2], n.cores=1, alpha=0.6, C=15, normalization=TRUE)

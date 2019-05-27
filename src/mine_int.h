@@ -1,23 +1,27 @@
+#ifndef MINE_INT_H
+#define MINE_INT_H
 
-const std::map<std::string, int> create_measure_map()
-{
-  std::map<std::string, int> MEASURE;
-  // {{"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6}}
-  MEASURE["mic"]=1;
-  MEASURE["mas"]=2;
-  MEASURE["mev"]=3;
-  MEASURE["mcn"]=4;
-  MEASURE["tic"]=5;
-  MEASURE["gmic"]=6;
+const std::map<std::string, int> create_measure_map();
+const std::map<std::string, int> create_est_map();
 
-  return MEASURE;
-}
 
-const std::map<std::string, int> create_est_map()
-{
-  std::map<std::string, int> EST;
-  EST["mic_approx"]=0;
-  EST["mic_e"]=1;
- 
-  return EST;
-}
+/* Create a constant map for available measures 
+ * of the mine statistic.
+ * Values are coded as follows:
+ * {"mic", 1}, {"mas", 2}, {"mev", 3}, {"mcn", 4}, {"tic", 5}, {"gmic", 6};
+ * It works with upper case also.
+ */
+const std::map<std::string, int> MEASURE=create_measure_map();
+//
+
+
+
+const std::map<std::string, int> EST=create_est_map();
+
+
+#include <Rcpp.h>
+
+double mine_stat(Rcpp::NumericVector x, Rcpp::NumericVector y, double alpha, double C, Rcpp::String est, Rcpp::String measure, double eps, double p, bool norm);
+
+#endif
+
