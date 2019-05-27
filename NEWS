@@ -1,3 +1,8 @@
+V. 1.5.8
+------
+- Solved bug in choosing measure for mine_stat function
+- Solved default parameter handling for NA in the mine_stat function
+
 V. 1.5.7
 ------
 - Included new versione of libmine
