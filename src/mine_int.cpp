@@ -111,7 +111,7 @@ mine_matrix *rMattomine(NumericMatrix x)
 //' @param measure integer indicating which measure to return
 //' available measures are: \code{mic, mas, mev, mcn, tic, gmic}. The string could be also uppercase.
 //' For measure \code{mic-r2} see details.
-//' @param eps eps value for MCN statistic should be in (0,1). If NA is passed then the normal MCN statistic is returned.
+//' @param eps eps value for MCN statistic should be in (0,1). If NA (default) is passed then the normal MCN statistic is returned.
 //' @param p probability for the generalized mic
 //' @param norm boolean if require normalization between 0 and 1 for the \code{tic} statistic
 //' @details This is a wrapper function to compute the mine statistic between two variables.
