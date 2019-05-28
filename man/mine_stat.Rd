@@ -24,7 +24,7 @@ Possible values are \code{"mic_approx"} or \code{"mic_e"}}
 available measures are: \code{mic, mas, mev, mcn, tic, gmic}. The string could be also uppercase.
 For measure \code{mic-r2} see details.}
 
-\item{eps}{eps value for MCN statistic should be in (0,1). If NA is passed then the normal MCN statistic is returned.}
+\item{eps}{eps value for MCN statistic should be in (0,1). If NA (default) is passed then the normal MCN statistic is returned.}
 
 \item{p}{probability for the generalized mic}
 
