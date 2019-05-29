@@ -515,4 +515,29 @@ NumericVector mictools_null(NumericMatrix x, double alpha=9, double C=5, int npe
 
 
 
+double corC(NumericVector x, NumericVector y)
+{
+  int i;
+  int n = x.size();
+  double xm=std::accumulate(x.begin(), x.end(), 0.0) / n;
+  double ym=std::accumulate(y.begin(), y.end(), 0.0) / n;
+  double num=0.0;
+  
+  double sx, sy, rr;
+  sx=0.0;
+  sy=0.0;
+  for (i=0; i<n; i++)
+  {
+
+    num += (x[i] - xm) * (y[i] - ym);
+    sx += pow((x[i] - xm), 2);
+    sy += pow((y[i] - ym), 2);
+  }
+  
+  rr =  num  / sqrt(sx * sy);
+  return(rr);
+}
+
+
+
 

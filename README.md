@@ -5,6 +5,7 @@ R package for Maximal Information-Based Nonparametric Exploration computation
 
 * Minepy [Homepage](http://minepy.readthedocs.io/en/latest/)
 * Minepy [Github](https://github.com/minepy/minepy)
+* Mictools [Github](https://github.com/minepy/mictools)
 
 
 ## Install
@@ -36,6 +37,20 @@ x <- 0:200 / 200
 y <- sin(10 * pi * x) + x
 mine_stat(x, y, measure="mic")
 ```
+
+-  To compute the `mic-r2` measure use the `cor` R function:
+
+```r
+x <- 0:200 / 200
+y <- sin(10 * pi * x) + x
+
+r2 <- cor(x, y)
+mm <- mine_stat(x, y, measure="mic")
+mm - r2**2
+
+## mine(x, y, n.cores=1)[[5]]
+```
+
 ### Compute statistic on matrices
 
 -  All features in a single matrix (`mine_compute_pstat`).
@@ -67,7 +82,7 @@ header=TRUE, row.names=1, as.is=TRUE, stringsAsFactors=FALSE)
 datasaurus.m <- t(datasaurus)
 ```
 
-### Compute null distribution for tic_e
+### Compute null distribution for `tic_e`
 
 Automatically compute:
 
@@ -78,18 +93,20 @@ Automatically compute:
 -  P-value for each variable pair association.
 
 ```r
-ticnull <- mictools(datasaurus.m, nperm=100000, seed=1234)
+ticnull <- mictools(datasaurus.m, nperm=10000, seed=1234)
 
 ## Get the names of the named list
 names(ticnull)
 ##[1]  "tic"      "nulldist" "obstic"   "obsdist"  "pval"
-str(ticnull)
 
-ticnull$nulldist
-ticnull$obsdist
+
 ```
 
 ##### Null Distribution
+
+```r
+ticnull$nulldist
+```
 
 | BinStart| BinEnd| NullCount| NullCumSum|
 |--------:|------:|---------:|----------:|
@@ -104,6 +121,10 @@ ticnull$obsdist
 
 
 ##### Observed distribution
+
+```r
+ticnull$obsdist
+```
 
 | BinStart| BinEnd| Count| CountCum|
 |--------:|------:|-----:|--------:|
