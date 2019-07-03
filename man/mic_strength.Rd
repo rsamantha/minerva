@@ -35,7 +35,7 @@ This function uses the null distribution of the \code{tic_e} computed with the f
 Based on the available pvalue and the permutation null distribution it identifies reliable association between variables.
 }
 \details{
-The method implemented here is a wrapper for the original method published by Albaese et al. (2018). The python version
+The method implemented here is a wrapper for the original method published by Albanese et al. (2018). The python version
 is available at \url{https://github.com/minepy/mictools}.
 
 This function should be called after the estimation of the null distribution of \code{tic_e} scores based on permutations of the input data.

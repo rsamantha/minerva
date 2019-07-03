@@ -109,7 +109,7 @@ mictools <- function(x, alpha=9, C=5, seed=0, nperm=200000, p.adjust.method="BH"
 #' @param pval.col an integer or character or vector relative to the columns of \code{pval} dataframe respectively for \code{pvalue}, 
 #' association between variable 1, variable 2 in the \code{x} input matrix. See Details for further information.
 #' @inheritParams mictools
-#' @details The method implemented here is a wrapper for the original method published by Albaese et al. (2018). The python version
+#' @details The method implemented here is a wrapper for the original method published by Albanese et al. (2018). The python version
 #' is available at \url{https://github.com/minepy/mictools}.
 #' 
 #' This function should be called after the estimation of the null distribution of \code{tic_e} scores based on permutations of the input data.
@@ -189,7 +189,7 @@ mic_strength <- function(x, pval, alpha=NULL, C=5, pthr=0.05, pval.col=NULL)
   pval.col <- check_pvalcol(pval, pval.col)
   
   ## Select association by pvalue
-  pix <- pval[, pval.col[1]] < 0.05
+  pix <- pval[, pval.col[1]] < pthr
   
   ## Compute mic in res[,2]
   res <- sapply(which(pix), function(y, x.sub, vartouse, alpha, C){

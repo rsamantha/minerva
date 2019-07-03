@@ -1,3 +1,7 @@
+V. 1.5.9
+------
+- Added custom choice of pvalue threshold in mic_strenght function
+
 V. 1.5.8
 ------
 - Solved bug in choosing measure for mine_stat function
