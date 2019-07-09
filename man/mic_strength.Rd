@@ -57,7 +57,7 @@ mydata <- as.matrix(Spellman[, 10:20])
 ticenull <- mictools(mydata, nperm=1000)
 
 ## Use the nominal pvalue:
-ms <- mic_strength(mydata, pval=ticenull$pval, alpha=NULL, pval.col = c(6, 4,5))
+ms <- mic_strength(mydata, pval=ticenull$pval, alpha=NULL, pval.col = c(1, 4,5))
 
 ## Use the adjusted pvalue:
 ms <- mic_strength(mydata, pval=ticenull$pval, alpha=NULL, pval.col = c(6, 4,5))
