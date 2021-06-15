@@ -91,7 +91,7 @@ mine_matrix *rMattomine(NumericMatrix x)
 {
   mine_matrix *X;
   
-  X = (mine_matrix *) Calloc(1, mine_matrix);
+  X = (mine_matrix *) R_Calloc(1, mine_matrix);
   X->data=REAL(x);
   X->n=x.ncol();
   X->m=x.nrow();
@@ -465,7 +465,7 @@ NumericVector mictools_null(NumericMatrix x, double alpha=9, double C=5, int npe
   mine_score *minescore;
   
   /* Set parameters for mine computation */
-  param = (mine_parameter *) Calloc(1,mine_parameter);
+  param = (mine_parameter *) R_Calloc(1,mine_parameter);
   param->alpha=alpha;
   param->c=C;
   param->est=1; // est == "mic_e"
@@ -477,7 +477,7 @@ NumericVector mictools_null(NumericMatrix x, double alpha=9, double C=5, int npe
   }
   
   /* Set up mine problem */
-  prob = (mine_problem *) Calloc(1,mine_problem);
+  prob = (mine_problem *) R_Calloc(1,mine_problem);
   prob->n=n;
   
   /* set seed */
@@ -507,8 +507,8 @@ NumericVector mictools_null(NumericMatrix x, double alpha=9, double C=5, int npe
   }
   
   /* Free memory */
-  Free(param);
-  Free(prob);
+  R_Free(param);
+  R_Free(prob);
   
   return(restic);
 }
